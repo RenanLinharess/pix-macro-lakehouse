@@ -23,7 +23,7 @@ def main() -> None:
         conteudo += ddl_criar_tabela(camada, chave) + ";\n\n"
         conteudo += "-- Comentarios reaplicados a cada execucao do pipeline:\n"
         conteudo += ";\n".join(ddl_comentarios(camada, chave)) + ";\n"
-        caminho.write_text(conteudo, encoding="utf-8")
+        caminho.write_text(conteudo, encoding="utf-8", newline="\n")
         print("gerado", caminho)
 
 
