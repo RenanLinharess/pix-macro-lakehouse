@@ -89,7 +89,7 @@ TABELAS: dict[str, dict[str, str]] = {
     "gold": {
         "indicadores_mensais": "indicadores_mensais",
         "pix_uf_mensal": "pix_uf_mensal",
-        "pix_rs_capital_interior": "pix_rs_capital_interior",
+        "pix_capital_interior_mensal": "pix_capital_interior_mensal",
         "cooperativas_uf": "cooperativas_uf",
     },
     "auditoria": {
