@@ -1,0 +1,55 @@
+# Job serverless que executa o pipeline medalhao em sequencia:
+# preparar ambiente -> bronze -> silver (com qualidade) -> gold.
+# Sem bloco de cluster: tarefas sem cluster rodam em serverless.
+resources:
+  jobs:
+    pipeline_pix_macro:
+      name: pix-macro-lakehouse - pipeline medalhao
+      description: >-
+        Ingestao das fontes publicas do Banco Central (Pix, Selic, IPCA, cooperativas),
+        limpeza com regras de qualidade e construcao dos indicadores gold.
+      performance_target: STANDARD
+      max_concurrent_runs: 1
+      tags:
+        projeto: pix-macro-lakehouse
+        camadas: bronze-silver-gold
+
+      parameters:
+        - name: modo_origem
+          default: volume
+        - name: fontes
+          default: ""
+        - name: mes_fim
+          default: ""
+
+      tasks:
+        - task_key: preparar_ambiente
+          notebook_task:
+            notebook_path: ../notebooks/00_preparar_ambiente.py
+
+        - task_key: bronze
+          depends_on:
+            - task_key: preparar_ambiente
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze.py
+
+        - task_key: silver
+          depends_on:
+            - task_key: bronze
+          notebook_task:
+            notebook_path: ../notebooks/02_silver.py
+            base_parameters:
+              execucao_id: "{{job.run_id}}"
+
+        - task_key: gold
+          depends_on:
+            - task_key: silver
+          notebook_task:
+            notebook_path: ../notebooks/03_gold.py
+
+      # O BCB publica as estatisticas do Pix com cerca de um mes de atraso.
+      # Agenda mensal, pausada ate que o deploy seja validado.
+      schedule:
+        quartz_cron_expression: "0 0 8 10 * ?"
+        timezone_id: America/Sao_Paulo
+        pause_status: PAUSED

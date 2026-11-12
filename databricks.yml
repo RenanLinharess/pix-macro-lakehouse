@@ -1,0 +1,32 @@
+# Declarative Automation Bundle do projeto.
+# Deploy:   databricks bundle validate -t dev
+#           databricks bundle deploy -t dev
+# Rodar:    databricks bundle run -t dev pipeline_pix_macro
+bundle:
+  name: pix-macro-lakehouse
+
+include:
+  - resources/*.yml
+
+variables:
+  catalogo:
+    description: Catalogo do Unity Catalog (o Free Edition usa 'workspace')
+    default: workspace
+  warehouse_id:
+    description: SQL warehouse usado pelo dashboard (preenchido no deploy do dashboard)
+    default: ""
+
+# O bundle sobe para o workspace tudo que nao esta no .gitignore: config/, src/, notebooks/, sql/.
+# data/raw/ e o BRIEFING.md ficam de fora.
+sync:
+  exclude:
+    - tests/**
+    - docs/**
+    - powerbi/**
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      profile: pix-macro
