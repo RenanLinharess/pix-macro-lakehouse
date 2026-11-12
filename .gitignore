@@ -1,0 +1,35 @@
+# Interno: briefing com contexto da vaga. Nunca versionar.
+BRIEFING.md
+
+# Dados brutos baixados das APIs (reprodutiveis pelo script de ingestao)
+data/raw/*
+!data/raw/.gitkeep
+
+# Segredos e configuracao local
+.env
+.databrickscfg
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Databricks Asset Bundles (estado local do deploy)
+.databricks/
+
+# Power BI (cache local do modelo; o projeto .pbip e versionado)
+*.pbix
+**/.pbi/cache.abf
+**/.pbi/localSettings.json
+
+# Editores e sistema
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

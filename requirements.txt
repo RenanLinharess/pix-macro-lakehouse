@@ -1,0 +1,6 @@
+# Dependencias para rodar a ingestao e os testes localmente (Windows, Python 3.11+).
+# O PySpark NAO esta aqui de proposito: as transformacoes Spark rodam no Databricks (serverless),
+# e a logica de negocio testavel fica em Python puro (src/transformacoes).
+requests>=2.32
+python-dotenv>=1.0
+pytest>=8.0

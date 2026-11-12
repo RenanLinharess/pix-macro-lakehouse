@@ -1,0 +1,10 @@
+[project]
+name = "pix-macro-lakehouse"
+version = "0.1.0"
+description = "Pipeline medalhao no Databricks com dados abertos do Banco Central: Pix, Selic, IPCA e cooperativas de credito."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
