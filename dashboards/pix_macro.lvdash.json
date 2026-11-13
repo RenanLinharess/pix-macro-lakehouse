@@ -1,0 +1,467 @@
+{
+  "datasets": [
+    {
+      "name": "ds_indicadores",
+      "displayName": "Indicadores mensais",
+      "queryLines": [
+        "SELECT ano_mes, data_referencia, pix_quantidade, pix_valor, pix_ticket_medio,\n",
+        "       pix_quantidade_var_12m_pct / 100 AS pix_quantidade_var_12m,\n",
+        "       pix_valor_var_12m_pct / 100 AS pix_valor_var_12m,\n",
+        "       selic_media / 100 AS selic_media,\n",
+        "       ipca_variacao_mensal / 100 AS ipca_variacao_mensal,\n",
+        "       ipca_acumulado_12m / 100 AS ipca_acumulado_12m,\n",
+        "       MAX_BY(pix_valor, ano_mes) OVER () AS ultimo_pix_valor,\n",
+        "       MAX_BY(pix_quantidade, ano_mes) OVER () AS ultimo_pix_quantidade,\n",
+        "       MAX_BY(pix_quantidade_var_12m_pct, ano_mes) OVER () / 100 AS ultima_var_12m,\n",
+        "       MAX_BY(ipca_acumulado_12m, ano_mes) OVER () / 100 AS ultimo_ipca_12m\n",
+        "FROM indicadores_mensais\n",
+        "ORDER BY data_referencia"
+      ]
+    },
+    {
+      "name": "ds_uf_ranking",
+      "displayName": "Pix por UF no ultimo mes",
+      "queryLines": [
+        "SELECT uf AS sigla_uf, regiao, data_referencia, quantidade, valor, pessoas_pagadoras, valor_por_pessoa,\n",
+        "       participacao_nacional_valor_pct / 100 AS participacao_nacional,\n",
+        "       valor_var_12m_pct / 100 AS valor_var_12m\n",
+        "FROM pix_uf_mensal\n",
+        "WHERE ano_mes = (SELECT MAX(ano_mes) FROM pix_uf_mensal) AND uf <> 'ND'\n",
+        "ORDER BY valor DESC"
+      ]
+    },
+    {
+      "name": "ds_capital_interior",
+      "displayName": "Capital x interior por UF",
+      "queryLines": [
+        "SELECT ano_mes, data_referencia, uf, tipo_localidade, quantidade, valor, pessoas_pagadoras, municipios,\n",
+        "       participacao_uf_valor_pct / 100 AS participacao_uf,\n",
+        "       valor / pessoas_pagadoras AS valor_por_pessoa\n",
+        "FROM pix_capital_interior_mensal\n",
+        "WHERE uf <> 'ND'\n",
+        "ORDER BY data_referencia, tipo_localidade"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "visao_geral",
+      "displayName": "Pix, juros e inflacao",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "cabecalho",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Pix no Brasil: crescimento, juros e inflacao\n",
+                "\n",
+                "Desde o lancamento, em novembro de 2020, o Pix cresceu continuamente mesmo com a Selic subindo de 2% para mais de 13% ao ano e a inflacao oscilando. O ticket medio caiu ao longo do tempo: o Pix deixou de ser transferencia ocasional e virou o pagamento do dia a dia, sinal de inclusao financeira. O recorte por UF mostra onde o uso e mais intenso e quanto do volume de cada estado vem do interior, nao da capital. Fonte: dados abertos do Banco Central (Pix, SGS 432 e 433)."
+              ]
+            }
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi_valor",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "max(ultimo_pix_valor)", "expression": "MAX(`ultimo_pix_valor`)"},
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(ultimo_pix_valor)",
+                  "displayName": "Valor movimentado no ultimo mes",
+                  "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
+                },
+                "period": {"fieldName": "monthly(data_referencia)"}
+              },
+              "frame": {"title": "Valor movimentado no mes (R$)", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 3, "width": 3, "height": 4}
+        },
+        {
+          "widget": {
+            "name": "kpi_quantidade",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "max(ultimo_pix_quantidade)", "expression": "MAX(`ultimo_pix_quantidade`)"},
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(ultimo_pix_quantidade)",
+                  "displayName": "Transacoes no ultimo mes",
+                  "format": {"type": "number", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 2}}
+                },
+                "period": {"fieldName": "monthly(data_referencia)"}
+              },
+              "frame": {"title": "Transacoes no mes", "showTitle": true}
+            }
+          },
+          "position": {"x": 3, "y": 3, "width": 3, "height": 4}
+        },
+        {
+          "widget": {
+            "name": "kpi_crescimento",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "max(ultima_var_12m)", "expression": "MAX(`ultima_var_12m`)"},
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(ultima_var_12m)",
+                  "displayName": "Crescimento da quantidade em 12 meses",
+                  "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 1}}
+                },
+                "period": {"fieldName": "monthly(data_referencia)"}
+              },
+              "frame": {"title": "Crescimento em 12 meses (transacoes)", "showTitle": true}
+            }
+          },
+          "position": {"x": 6, "y": 3, "width": 3, "height": 4}
+        },
+        {
+          "widget": {
+            "name": "kpi_ipca",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "max(ultimo_ipca_12m)", "expression": "MAX(`ultimo_ipca_12m`)"},
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(ultimo_ipca_12m)",
+                  "displayName": "IPCA acumulado em 12 meses",
+                  "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 2}}
+                },
+                "period": {"fieldName": "monthly(data_referencia)"}
+              },
+              "frame": {"title": "IPCA acumulado em 12 meses", "showTitle": true}
+            }
+          },
+          "position": {"x": 9, "y": 3, "width": 3, "height": 4}
+        },
+        {
+          "widget": {
+            "name": "pix_vs_selic",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
+                    {"name": "sum(pix_valor)", "expression": "SUM(`pix_valor`)"},
+                    {"name": "avg(selic_media)", "expression": "AVG(`selic_media`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "combo",
+              "encodings": {
+                "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
+                "y": {
+                  "scale": {"type": "quantitative"},
+                  "primary": {
+                    "fields": [
+                      {"fieldName": "sum(pix_valor)", "displayName": "Valor movimentado via Pix (R$)",
+                       "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}}
+                    ]
+                  },
+                  "secondary": {
+                    "fields": [
+                      {"fieldName": "avg(selic_media)", "displayName": "Meta Selic (media do mes)",
+                       "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 2}}}
+                    ]
+                  }
+                },
+                "label": {"show": false}
+              },
+              "frame": {"title": "O Pix cresceu com a Selic subindo e descendo", "showTitle": true,
+                        "showDescription": true, "description": "Barras: valor liquidado via Pix no mes. Linha: media mensal da meta Selic. O volume do Pix nao acompanha o ciclo de juros."}
+            }
+          },
+          "position": {"x": 0, "y": 7, "width": 8, "height": 6}
+        },
+        {
+          "widget": {
+            "name": "ticket_medio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
+                    {"name": "avg(pix_ticket_medio)", "expression": "AVG(`pix_ticket_medio`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
+                "y": {"fieldName": "avg(pix_ticket_medio)", "scale": {"type": "quantitative"}, "displayName": "Ticket medio (R$)",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "decimalPlaces": {"type": "max", "places": 0}}}
+              },
+              "frame": {"title": "Ticket medio caiu: Pix virou pagamento do dia a dia", "showTitle": true,
+                        "showDescription": true, "description": "Valor medio por transacao (valor / quantidade)."}
+            }
+          },
+          "position": {"x": 8, "y": 7, "width": 4, "height": 6}
+        },
+        {
+          "widget": {
+            "name": "ipca_vs_crescimento",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_indicadores",
+                  "fields": [
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
+                    {"name": "avg(ipca_acumulado_12m)", "expression": "AVG(`ipca_acumulado_12m`)"},
+                    {"name": "avg(selic_media)", "expression": "AVG(`selic_media`)"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
+                "y": {
+                  "scale": {"type": "quantitative"},
+                  "fields": [
+                    {"fieldName": "avg(ipca_acumulado_12m)", "displayName": "IPCA acumulado 12 meses",
+                     "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 1}}},
+                    {"fieldName": "avg(selic_media)", "displayName": "Meta Selic (media do mes)",
+                     "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 1}}}
+                  ]
+                }
+              },
+              "frame": {"title": "Juros e inflacao no mesmo periodo", "showTitle": true,
+                        "showDescription": true, "description": "A Selic sobe depois da inflacao e cai quando ela cede. O Pix cresce nos dois cenarios."}
+            }
+          },
+          "position": {"x": 0, "y": 13, "width": 6, "height": 6}
+        },
+        {
+          "widget": {
+            "name": "ranking_uf",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_uf_ranking",
+                  "fields": [
+                    {"name": "sigla_uf", "expression": "`sigla_uf`"},
+                    {"name": "sum(valor_por_pessoa)", "expression": "SUM(`valor_por_pessoa`)"},
+                    {"name": "regiao", "expression": "`regiao`"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "sum(valor_por_pessoa)", "scale": {"type": "quantitative"}, "displayName": "Valor pago por pessoa (R$)",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "decimalPlaces": {"type": "max", "places": 0}}},
+                "y": {"fieldName": "sigla_uf", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
+                "color": {"fieldName": "regiao", "scale": {"type": "categorical"}, "displayName": "Regiao"},
+                "label": {"show": true}
+              },
+              "frame": {"title": "Intensidade de uso por UF no ultimo mes", "showTitle": true,
+                        "showDescription": true, "description": "Valor pago via Pix dividido pelas pessoas pagadoras da UF. Cor por regiao."}
+            }
+          },
+          "position": {"x": 6, "y": 13, "width": 6, "height": 6}
+        },
+        {
+          "widget": {
+            "name": "filtro_uf",
+            "queries": [
+              {
+                "name": "ds_uf_filtro",
+                "query": {
+                  "datasetName": "ds_capital_interior",
+                  "fields": [{"name": "uf", "expression": "`uf`"}],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [{"fieldName": "uf", "displayName": "UF", "queryName": "ds_uf_filtro"}]
+              },
+              "selection": {"defaultSelection": {"values": {"dataType": "STRING", "values": [{"value": "RS"}]}}},
+              "frame": {"showTitle": true, "title": "UF do recorte capital x interior"}
+            }
+          },
+          "position": {"x": 0, "y": 19, "width": 3, "height": 2}
+        },
+        {
+          "widget": {
+            "name": "texto_interior",
+            "multilineTextboxSpec": {
+              "lines": [
+                "**Capital x interior.** Quanto do valor pago via Pix em cada estado vem de fora da capital. Estados com economia regional forte e rede de cooperativas de credito no interior tendem a ter participacao alta do interior. Escolha a UF ao lado."
+              ]
+            }
+          },
+          "position": {"x": 3, "y": 19, "width": 9, "height": 2}
+        },
+        {
+          "widget": {
+            "name": "capital_interior_participacao",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_capital_interior",
+                  "fields": [
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
+                    {"name": "sum(valor)", "expression": "SUM(`valor`)"},
+                    {"name": "tipo_localidade", "expression": "`tipo_localidade`"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "mark": {"layout": "stack-100"},
+              "encodings": {
+                "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
+                "y": {"fieldName": "sum(valor)", "scale": {"type": "quantitative"}, "displayName": "Participacao no valor pago"},
+                "color": {
+                  "fieldName": "tipo_localidade",
+                  "scale": {"type": "categorical", "mappings": [
+                    {"value": "interior", "color": "#3C6997"},
+                    {"value": "capital", "color": "#FE9000"}
+                  ]},
+                  "displayName": "Localidade"
+                },
+                "label": {"show": false}
+              },
+              "frame": {"title": "Participacao do interior no valor pago via Pix", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 21, "width": 7, "height": 6}
+        },
+        {
+          "widget": {
+            "name": "capital_interior_pessoa",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_capital_interior",
+                  "fields": [
+                    {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
+                    {"name": "avg(valor_por_pessoa)", "expression": "AVG(`valor_por_pessoa`)"},
+                    {"name": "tipo_localidade", "expression": "`tipo_localidade`"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
+                "y": {"fieldName": "avg(valor_por_pessoa)", "scale": {"type": "quantitative"}, "displayName": "Valor pago por pessoa (R$)",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "decimalPlaces": {"type": "max", "places": 0}}},
+                "color": {
+                  "fieldName": "tipo_localidade",
+                  "scale": {"type": "categorical", "mappings": [
+                    {"value": "interior", "color": "#3C6997"},
+                    {"value": "capital", "color": "#FE9000"}
+                  ]},
+                  "displayName": "Localidade"
+                }
+              },
+              "frame": {"title": "Valor pago por pessoa: capital x interior", "showTitle": true}
+            }
+          },
+          "position": {"x": 7, "y": 21, "width": 5, "height": 6}
+        }
+      ]
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {"light": "#F7F9FB", "dark": "#1B222A"},
+      "widgetBackgroundColor": {"light": "#FFFFFF", "dark": "#11171C"},
+      "widgetBorderColor": {"light": "#FFFFFF", "dark": "#11171C"},
+      "fontColor": {"light": "#11171C", "dark": "#E8ECF0"},
+      "selectionColor": {"light": "#094074", "dark": "#5ADBFF"},
+      "visualizationColors": ["#094074", "#3C6997", "#5ADBFF", "#FFDD4A", "#FE9000", "#B23A48", "#6BCB77"],
+      "widgetHeaderAlignment": "LEFT"
+    }
+  }
+}

@@ -5,9 +5,9 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_silver.pix_municipio_mensal (
   codigo_ibge_municipio INT COMMENT 'Codigo IBGE do municipio (7 digitos)',
   municipio STRING COMMENT 'Nome do municipio',
   codigo_ibge_uf INT COMMENT 'Codigo IBGE da unidade da federacao',
-  uf STRING COMMENT 'Sigla da unidade da federacao',
+  uf STRING COMMENT 'Sigla da unidade da federacao; ND para a linha mensal de municipio nao informado publicada pelo BCB',
   regiao STRING COMMENT 'Nome da regiao geografica',
-  tipo_localidade STRING COMMENT 'capital ou interior, conforme o codigo IBGE da capital da UF',
+  tipo_localidade STRING COMMENT 'capital, interior (pelo codigo IBGE da capital da UF) ou nao informado',
   quantidade_pagador_pf BIGINT COMMENT 'Transacoes pagas por pessoas fisicas do municipio',
   valor_pagador_pf DECIMAL(20,2) COMMENT 'Valor pago por pessoas fisicas, em reais',
   quantidade_pagador_pj BIGINT COMMENT 'Transacoes pagas por pessoas juridicas do municipio',
@@ -33,9 +33,9 @@ ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN data_re
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN codigo_ibge_municipio COMMENT 'Codigo IBGE do municipio (7 digitos)';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN municipio COMMENT 'Nome do municipio';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN codigo_ibge_uf COMMENT 'Codigo IBGE da unidade da federacao';
-ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN uf COMMENT 'Sigla da unidade da federacao';
+ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN uf COMMENT 'Sigla da unidade da federacao; ND para a linha mensal de municipio nao informado publicada pelo BCB';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN regiao COMMENT 'Nome da regiao geografica';
-ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN tipo_localidade COMMENT 'capital ou interior, conforme o codigo IBGE da capital da UF';
+ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN tipo_localidade COMMENT 'capital, interior (pelo codigo IBGE da capital da UF) ou nao informado';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN quantidade_pagador_pf COMMENT 'Transacoes pagas por pessoas fisicas do municipio';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN valor_pagador_pf COMMENT 'Valor pago por pessoas fisicas, em reais';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN quantidade_pagador_pj COMMENT 'Transacoes pagas por pessoas juridicas do municipio';

@@ -5,6 +5,7 @@ from src.transformacoes.qualidade import (
     checar_faixa,
     checar_nulos,
     checar_reconciliacao,
+    checar_reconciliacao_serie,
     checar_unicidade,
     resumir,
 )
@@ -42,6 +43,17 @@ def test_reconciliacao_tolera_diferenca_pequena():
     assert checar_reconciliacao(3850642790, 3850642786, "pix_qtd")["status"] == OK
     assert checar_reconciliacao(100, 90, "pix_qtd")["status"] == FALHA
     assert checar_reconciliacao(None, 90, "pix_qtd")["status"] == FALHA
+
+
+def test_reconciliacao_serie_lista_os_periodos_divergentes():
+    diferencas = {202011: 0.0647, 202012: 0.0002, 202101: 0.0001, 202309: 0.0335}
+    resultado = checar_reconciliacao_serie(diferencas, "pix_quantidade", tolerancia_relativa=0.005)
+    assert resultado["status"] == FALHA
+    assert resultado["valor_observado"] == 2
+    assert "[202011, 202309]" in resultado["detalhe"]
+    assert "6.4700%" in resultado["detalhe"]
+    assert checar_reconciliacao_serie({202012: 0.0002}, "x")["status"] == OK
+    assert checar_reconciliacao_serie({}, "x")["status"] == FALHA
 
 
 def test_resumir():

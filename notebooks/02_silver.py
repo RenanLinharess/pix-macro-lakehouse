@@ -97,9 +97,15 @@ pix_municipio_mensal = (
         F.col("Municipio_Ibge").alias("codigo_ibge_municipio"),
         F.col("Municipio").alias("municipio"),
         F.col("Estado_Ibge").alias("codigo_ibge_uf"),
-        mapa_uf[F.col("Estado_Ibge")].alias("uf"),
+        # O BCB publica, em cada mes, uma linha "NAO INFORMADO" (sem codigo IBGE) para transacoes
+        # sem municipio identificado. Mantemos a linha com uf = 'ND' em vez de descarta-la ou
+        # deixar nulo: o total nacional continua batendo e a categoria fica explicita.
+        F.coalesce(mapa_uf[F.col("Estado_Ibge")], F.lit("ND")).alias("uf"),
         F.col("Regiao").alias("regiao"),
-        F.when(F.col("Municipio_Ibge").isin(codigos_capitais), "capital").otherwise("interior").alias("tipo_localidade"),
+        F.when(F.col("Municipio_Ibge").isNull(), "nao informado")
+        .when(F.col("Municipio_Ibge").isin(codigos_capitais), "capital")
+        .otherwise("interior")
+        .alias("tipo_localidade"),
         F.col("QT_PagadorPF").alias("quantidade_pagador_pf"),
         F.col("VL_PagadorPF").alias("valor_pagador_pf"),
         F.col("QT_PagadorPJ").alias("quantidade_pagador_pj"),
@@ -253,25 +259,28 @@ registrar("silver", "base_mensal", qualidade.checar_nulos(contar_nulos(df, "pix_
 registrar("silver", "base_mensal", qualidade.checar_nulos(contar_nulos(df, "selic_media"), "selic_media", maximo_permitido=1), severidade="aviso")
 registrar("silver", "base_mensal", qualidade.checar_nulos(contar_nulos(df, "ipca_variacao_mensal"), "ipca_variacao_mensal", maximo_permitido=1), severidade="aviso")
 
-# Reconciliacao entre as duas fontes do Pix: a soma nacional deve bater com a soma por municipio.
+# Reconciliacao entre as duas fontes do Pix: a soma nacional deveria bater com a soma por municipio.
+# Observado na primeira carga (nov/2026): 68 de 72 meses batem dentro de 0,1%; quatro meses
+# (202011, 202309, 202510, 202602) divergem entre 3% e 6,5% na propria fonte do BCB.
+# Por isso a regra e AVISO (nao bloqueia) e registra quais meses passaram da tolerancia.
 nacional = spark.table(nome_tabela("silver", "pix_mensal")).groupBy("ano_mes").agg(F.sum("quantidade").alias("qtd_nacional"))
 municipal = (
     spark.table(nome_tabela("silver", "pix_municipio_mensal"))
     .groupBy("ano_mes")
     .agg(F.sum(F.col("quantidade_pagador_pf") + F.col("quantidade_pagador_pj")).alias("qtd_municipal"))
 )
-pior_mes = (
-    nacional.join(municipal, "ano_mes", "inner")
+diferencas_por_mes = {
+    l["ano_mes"]: float(l["diferenca"])
+    for l in nacional.join(municipal, "ano_mes", "inner")
     .withColumn("diferenca", F.abs(F.col("qtd_nacional") - F.col("qtd_municipal")) / F.col("qtd_nacional"))
-    .orderBy(F.col("diferenca").desc())
-    .limit(1)
+    .select("ano_mes", "diferenca")
     .collect()
+}
+registrar(
+    "silver", "pix_mensal",
+    qualidade.checar_reconciliacao_serie(diferencas_por_mes, "pix_quantidade nacional x municipal", tolerancia_relativa=0.005),
+    severidade="aviso",
 )
-if pior_mes:
-    linha = pior_mes[0]
-    registrar("silver", "pix_mensal", qualidade.checar_reconciliacao(float(linha["qtd_nacional"]), float(linha["qtd_municipal"]), f"pix_quantidade nacional x municipal (pior mes {linha['ano_mes']})"))
-else:
-    registrar("silver", "pix_mensal", qualidade.checar_reconciliacao(None, None, "pix_quantidade nacional x municipal"))
 
 # COMMAND ----------
 

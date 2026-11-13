@@ -80,6 +80,24 @@ def checar_reconciliacao(valor_a: float, valor_b: float, descricao: str, toleran
     return _resultado("reconciliacao", descricao, status, round(diferenca, 6), tolerancia_relativa, f"a={valor_a} b={valor_b}")
 
 
+def checar_reconciliacao_serie(diferencas_por_periodo: dict[int, float], descricao: str, tolerancia_relativa: float = 0.005) -> dict:
+    """
+    Versao da reconciliacao para uma serie inteira: recebe {periodo: diferenca_relativa} e
+    falha se algum periodo passar da tolerancia. O detalhe lista os periodos divergentes,
+    para que a tabela de auditoria mostre ONDE as fontes discordam, nao so que discordam.
+    """
+    if not diferencas_por_periodo:
+        return _resultado("reconciliacao", descricao, FALHA, None, tolerancia_relativa, "serie vazia")
+    divergentes = sorted(p for p, d in diferencas_por_periodo.items() if d is None or d > tolerancia_relativa)
+    pior = max(d for d in diferencas_por_periodo.values() if d is not None)
+    status = OK if not divergentes else FALHA
+    detalhe = (
+        f"{len(diferencas_por_periodo)} periodos comparados, pior diferenca {pior:.4%}"
+        + (f", divergentes: {divergentes[:12]}" if divergentes else "")
+    )
+    return _resultado("reconciliacao", descricao, status, len(divergentes), tolerancia_relativa, detalhe)
+
+
 def resumir(resultados: list[dict]) -> dict:
     """Conta ok e falhas; util para decidir se o job continua."""
     falhas = [r for r in resultados if r["status"] == FALHA]
