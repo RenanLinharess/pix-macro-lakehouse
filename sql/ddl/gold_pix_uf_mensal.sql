@@ -11,6 +11,11 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_gold.pix_uf_mensal (
   valor_por_pessoa DECIMAL(12,2) COMMENT 'Valor pago dividido pelas pessoas pagadoras, em reais',
   participacao_nacional_valor_pct DECIMAL(8,4) COMMENT 'Participacao da UF no valor pago nacional, em %',
   valor_var_12m_pct DECIMAL(10,4) COMMENT 'Variacao do valor pago em relacao ao mesmo mes do ano anterior, em %',
+  quantidade_pf BIGINT COMMENT 'Transacoes pagas por pessoas fisicas da UF',
+  valor_pf DECIMAL(20,2) COMMENT 'Valor pago por pessoas fisicas da UF, em reais',
+  pessoas_pagadoras_pf BIGINT COMMENT 'Soma das pessoas fisicas pagadoras distintas por municipio',
+  transacoes_por_pessoa_pf DECIMAL(10,2) COMMENT 'Transacoes por pessoa fisica pagadora no mes: intensidade de uso no dia a dia',
+  valor_por_pessoa_pf DECIMAL(12,2) COMMENT 'Valor pago por pessoa fisica pagadora no mes, em reais',
   atualizado_em TIMESTAMP COMMENT 'Momento (UTC) da ultima execucao que gravou a linha'
 )
 USING DELTA
@@ -29,4 +34,9 @@ ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN municipios COMME
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN valor_por_pessoa COMMENT 'Valor pago dividido pelas pessoas pagadoras, em reais';
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN participacao_nacional_valor_pct COMMENT 'Participacao da UF no valor pago nacional, em %';
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN valor_var_12m_pct COMMENT 'Variacao do valor pago em relacao ao mesmo mes do ano anterior, em %';
+ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN quantidade_pf COMMENT 'Transacoes pagas por pessoas fisicas da UF';
+ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN valor_pf COMMENT 'Valor pago por pessoas fisicas da UF, em reais';
+ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN pessoas_pagadoras_pf COMMENT 'Soma das pessoas fisicas pagadoras distintas por municipio';
+ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN transacoes_por_pessoa_pf COMMENT 'Transacoes por pessoa fisica pagadora no mes: intensidade de uso no dia a dia';
+ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN valor_por_pessoa_pf COMMENT 'Valor pago por pessoa fisica pagadora no mes, em reais';
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN atualizado_em COMMENT 'Momento (UTC) da ultima execucao que gravou a linha';

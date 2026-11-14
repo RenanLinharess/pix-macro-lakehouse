@@ -23,6 +23,7 @@
       "displayName": "Pix por UF no ultimo mes",
       "queryLines": [
         "SELECT uf AS sigla_uf, regiao, data_referencia, quantidade, valor, pessoas_pagadoras, valor_por_pessoa,\n",
+        "       quantidade_pf, valor_pf, pessoas_pagadoras_pf, transacoes_por_pessoa_pf, valor_por_pessoa_pf,\n",
         "       participacao_nacional_valor_pct / 100 AS participacao_nacional,\n",
         "       valor_var_12m_pct / 100 AS valor_var_12m\n",
         "FROM pix_uf_mensal\n",
@@ -35,8 +36,8 @@
       "displayName": "Capital x interior por UF",
       "queryLines": [
         "SELECT ano_mes, data_referencia, uf, tipo_localidade, quantidade, valor, pessoas_pagadoras, municipios,\n",
-        "       participacao_uf_valor_pct / 100 AS participacao_uf,\n",
-        "       valor / pessoas_pagadoras AS valor_por_pessoa\n",
+        "       quantidade_pf, valor_pf, pessoas_pagadoras_pf, transacoes_por_pessoa_pf, valor_por_pessoa_pf,\n",
+        "       participacao_uf_valor_pct / 100 AS participacao_uf\n",
         "FROM pix_capital_interior_mensal\n",
         "WHERE uf <> 'ND'\n",
         "ORDER BY data_referencia, tipo_localidade"
@@ -314,7 +315,7 @@
                   "datasetName": "ds_uf_ranking",
                   "fields": [
                     {"name": "sigla_uf", "expression": "`sigla_uf`"},
-                    {"name": "sum(valor_por_pessoa)", "expression": "SUM(`valor_por_pessoa`)"},
+                    {"name": "sum(transacoes_por_pessoa_pf)", "expression": "SUM(`transacoes_por_pessoa_pf`)"},
                     {"name": "regiao", "expression": "`regiao`"}
                   ],
                   "disaggregated": false
@@ -325,14 +326,14 @@
               "version": 3,
               "widgetType": "bar",
               "encodings": {
-                "x": {"fieldName": "sum(valor_por_pessoa)", "scale": {"type": "quantitative"}, "displayName": "Valor pago por pessoa (R$)",
-                      "format": {"type": "number-currency", "currencyCode": "BRL", "decimalPlaces": {"type": "max", "places": 0}}},
+                "x": {"fieldName": "sum(transacoes_por_pessoa_pf)", "scale": {"type": "quantitative"}, "displayName": "Transacoes por pessoa fisica no mes",
+                      "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 1}}},
                 "y": {"fieldName": "sigla_uf", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
                 "color": {"fieldName": "regiao", "scale": {"type": "categorical"}, "displayName": "Regiao"},
                 "label": {"show": true}
               },
-              "frame": {"title": "Intensidade de uso por UF no ultimo mes", "showTitle": true,
-                        "showDescription": true, "description": "Valor pago via Pix dividido pelas pessoas pagadoras da UF. Cor por regiao."}
+              "frame": {"title": "Uso do Pix no dia a dia por UF (ultimo mes)", "showTitle": true,
+                        "showDescription": true, "description": "Transacoes pagas por pessoa fisica dividido pelas pessoas fisicas que pagaram no mes. Cor por regiao."}
             }
           },
           "position": {"x": 6, "y": 13, "width": 6, "height": 6}
@@ -422,7 +423,7 @@
                   "datasetName": "ds_capital_interior",
                   "fields": [
                     {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
-                    {"name": "avg(valor_por_pessoa)", "expression": "AVG(`valor_por_pessoa`)"},
+                    {"name": "avg(transacoes_por_pessoa_pf)", "expression": "AVG(`transacoes_por_pessoa_pf`)"},
                     {"name": "tipo_localidade", "expression": "`tipo_localidade`"}
                   ],
                   "disaggregated": false
@@ -434,8 +435,8 @@
               "widgetType": "line",
               "encodings": {
                 "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
-                "y": {"fieldName": "avg(valor_por_pessoa)", "scale": {"type": "quantitative"}, "displayName": "Valor pago por pessoa (R$)",
-                      "format": {"type": "number-currency", "currencyCode": "BRL", "decimalPlaces": {"type": "max", "places": 0}}},
+                "y": {"fieldName": "avg(transacoes_por_pessoa_pf)", "scale": {"type": "quantitative"}, "displayName": "Transacoes por pessoa fisica no mes",
+                      "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 1}}},
                 "color": {
                   "fieldName": "tipo_localidade",
                   "scale": {"type": "categorical", "mappings": [
@@ -445,7 +446,7 @@
                   "displayName": "Localidade"
                 }
               },
-              "frame": {"title": "Valor pago por pessoa: capital x interior", "showTitle": true}
+              "frame": {"title": "Transacoes por pessoa fisica: capital x interior", "showTitle": true}
             }
           },
           "position": {"x": 7, "y": 21, "width": 5, "height": 6}

@@ -12,9 +12,13 @@ variables:
   catalogo:
     description: Catalogo do Unity Catalog (o Free Edition usa 'workspace')
     default: workspace
+  schema_gold:
+    description: Schema das tabelas gold que alimentam o dashboard
+    default: pix_macro_gold
   warehouse_id:
-    description: SQL warehouse usado pelo dashboard (preenchido no deploy do dashboard)
-    default: ""
+    description: SQL warehouse usado pelo dashboard (Free Edition tem um unico, 2X-Small)
+    lookup:
+      warehouse: "Serverless Starter Warehouse"
 
 # O bundle sobe para o workspace tudo que nao esta no .gitignore: config/, src/, notebooks/, sql/.
 # data/raw/ e o BRIEFING.md ficam de fora.

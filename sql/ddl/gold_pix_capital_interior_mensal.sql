@@ -9,6 +9,11 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_gold.pix_capital_interior_mensal 
   pessoas_pagadoras BIGINT COMMENT 'Soma das pessoas pagadoras distintas por municipio (PF e PJ)',
   municipios INT COMMENT 'Municipios com transacoes no mes',
   participacao_uf_valor_pct DECIMAL(8,4) COMMENT 'Participacao no valor pago da UF, em %',
+  quantidade_pf BIGINT COMMENT 'Transacoes pagas por pessoas fisicas',
+  valor_pf DECIMAL(20,2) COMMENT 'Valor pago por pessoas fisicas, em reais',
+  pessoas_pagadoras_pf BIGINT COMMENT 'Soma das pessoas fisicas pagadoras distintas por municipio',
+  transacoes_por_pessoa_pf DECIMAL(10,2) COMMENT 'Transacoes por pessoa fisica pagadora no mes',
+  valor_por_pessoa_pf DECIMAL(12,2) COMMENT 'Valor pago por pessoa fisica pagadora no mes, em reais',
   atualizado_em TIMESTAMP COMMENT 'Momento (UTC) da ultima execucao que gravou a linha'
 )
 USING DELTA
@@ -25,4 +30,9 @@ ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN va
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN pessoas_pagadoras COMMENT 'Soma das pessoas pagadoras distintas por municipio (PF e PJ)';
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN municipios COMMENT 'Municipios com transacoes no mes';
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN participacao_uf_valor_pct COMMENT 'Participacao no valor pago da UF, em %';
+ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN quantidade_pf COMMENT 'Transacoes pagas por pessoas fisicas';
+ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN valor_pf COMMENT 'Valor pago por pessoas fisicas, em reais';
+ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN pessoas_pagadoras_pf COMMENT 'Soma das pessoas fisicas pagadoras distintas por municipio';
+ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN transacoes_por_pessoa_pf COMMENT 'Transacoes por pessoa fisica pagadora no mes';
+ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN valor_por_pessoa_pf COMMENT 'Valor pago por pessoa fisica pagadora no mes, em reais';
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN atualizado_em COMMENT 'Momento (UTC) da ultima execucao que gravou a linha';

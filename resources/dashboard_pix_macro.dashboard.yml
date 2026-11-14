@@ -1,0 +1,12 @@
+# Dashboard AI/BI publicado junto com o pipeline.
+# As consultas do JSON usam nomes de tabela sem catalogo/schema; o bundle preenche com
+# dataset_catalog e dataset_schema, o que deixa o dashboard portavel entre ambientes.
+resources:
+  dashboards:
+    dashboard_pix_macro:
+      display_name: "Pix, juros e inflacao no Brasil"
+      file_path: ../dashboards/pix_macro.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+      dataset_catalog: ${var.catalogo}
+      dataset_schema: ${var.schema_gold}
+      embed_credentials: false

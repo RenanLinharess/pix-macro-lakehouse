@@ -102,12 +102,26 @@ print("indicadores_mensais:", gravar_tabela(indicadores_df, "gold", "indicadores
 
 municipios = spark.table(nome_tabela("silver", "pix_municipio_mensal"))
 
-por_uf = municipios.groupBy("ano_mes", "uf", "regiao").agg(
+# Agregacoes reaproveitadas nas duas tabelas gold. PF separado: "transacoes por pessoa fisica"
+# e a medida de uso no dia a dia; o total PF+PJ e dominado por empresas.
+AGREGACOES_PAGADOR = [
     F.sum(F.col("quantidade_pagador_pf") + F.col("quantidade_pagador_pj")).alias("quantidade"),
     F.sum(F.col("valor_pagador_pf") + F.col("valor_pagador_pj")).alias("valor"),
     F.sum(F.col("pessoas_pagadoras_pf") + F.col("pessoas_pagadoras_pj")).alias("pessoas_pagadoras"),
     F.countDistinct("codigo_ibge_municipio").alias("municipios"),
-)
+    F.sum("quantidade_pagador_pf").alias("quantidade_pf"),
+    F.sum("valor_pagador_pf").alias("valor_pf"),
+    F.sum("pessoas_pagadoras_pf").alias("pessoas_pagadoras_pf"),
+]
+
+
+def com_indicadores_pf(df):
+    return df.withColumn("transacoes_por_pessoa_pf", F.col("quantidade_pf") / F.col("pessoas_pagadoras_pf")).withColumn(
+        "valor_por_pessoa_pf", F.col("valor_pf") / F.col("pessoas_pagadoras_pf")
+    )
+
+
+por_uf = municipios.groupBy("ano_mes", "uf", "regiao").agg(*AGREGACOES_PAGADOR)
 
 janela_nacional = Window.partitionBy("ano_mes")
 janela_uf = Window.partitionBy("uf").orderBy("ano_mes")
@@ -117,6 +131,7 @@ pix_uf_mensal = (
     .withColumn("valor_12m_atras", F.lag("valor", 12).over(janela_uf))
     .withColumn("valor_var_12m_pct", (F.col("valor") / F.col("valor_12m_atras") - 1) * 100)
     .withColumn("valor_por_pessoa", F.col("valor") / F.col("pessoas_pagadoras"))
+    .transform(com_indicadores_pf)
     .withColumn("data_referencia", coluna_data_referencia("ano_mes"))
     .withColumn("atualizado_em", F.lit(AGORA))
 )
@@ -133,13 +148,9 @@ janela_uf_mes = Window.partitionBy("ano_mes", "uf")
 
 pix_capital_interior = (
     municipios.groupBy("ano_mes", "uf", "tipo_localidade")
-    .agg(
-        F.sum(F.col("quantidade_pagador_pf") + F.col("quantidade_pagador_pj")).alias("quantidade"),
-        F.sum(F.col("valor_pagador_pf") + F.col("valor_pagador_pj")).alias("valor"),
-        F.sum(F.col("pessoas_pagadoras_pf") + F.col("pessoas_pagadoras_pj")).alias("pessoas_pagadoras"),
-        F.countDistinct("codigo_ibge_municipio").alias("municipios"),
-    )
+    .agg(*AGREGACOES_PAGADOR)
     .withColumn("participacao_uf_valor_pct", F.col("valor") / F.sum("valor").over(janela_uf_mes) * 100)
+    .transform(com_indicadores_pf)
     .withColumn("data_referencia", coluna_data_referencia("ano_mes"))
     .withColumn("atualizado_em", F.lit(AGORA))
 )

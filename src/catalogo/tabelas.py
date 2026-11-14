@@ -240,6 +240,11 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
             ("valor_por_pessoa", "DECIMAL(12,2)", "Valor pago dividido pelas pessoas pagadoras, em reais"),
             ("participacao_nacional_valor_pct", "DECIMAL(8,4)", "Participacao da UF no valor pago nacional, em %"),
             ("valor_var_12m_pct", "DECIMAL(10,4)", "Variacao do valor pago em relacao ao mesmo mes do ano anterior, em %"),
+            ("quantidade_pf", "BIGINT", "Transacoes pagas por pessoas fisicas da UF"),
+            ("valor_pf", "DECIMAL(20,2)", "Valor pago por pessoas fisicas da UF, em reais"),
+            ("pessoas_pagadoras_pf", "BIGINT", "Soma das pessoas fisicas pagadoras distintas por municipio"),
+            ("transacoes_por_pessoa_pf", "DECIMAL(10,2)", "Transacoes por pessoa fisica pagadora no mes: intensidade de uso no dia a dia"),
+            ("valor_por_pessoa_pf", "DECIMAL(12,2)", "Valor pago por pessoa fisica pagadora no mes, em reais"),
             _ATUALIZADO_EM,
         ],
     },
@@ -256,6 +261,11 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
             ("pessoas_pagadoras", "BIGINT", "Soma das pessoas pagadoras distintas por municipio (PF e PJ)"),
             ("municipios", "INT", "Municipios com transacoes no mes"),
             ("participacao_uf_valor_pct", "DECIMAL(8,4)", "Participacao no valor pago da UF, em %"),
+            ("quantidade_pf", "BIGINT", "Transacoes pagas por pessoas fisicas"),
+            ("valor_pf", "DECIMAL(20,2)", "Valor pago por pessoas fisicas, em reais"),
+            ("pessoas_pagadoras_pf", "BIGINT", "Soma das pessoas fisicas pagadoras distintas por municipio"),
+            ("transacoes_por_pessoa_pf", "DECIMAL(10,2)", "Transacoes por pessoa fisica pagadora no mes"),
+            ("valor_por_pessoa_pf", "DECIMAL(12,2)", "Valor pago por pessoa fisica pagadora no mes, em reais"),
             _ATUALIZADO_EM,
         ],
     },
@@ -342,6 +352,22 @@ def ddl_comentarios(camada: str, chave: str) -> list[str]:
     for nome_coluna, _, comentario in colunas(camada, chave):
         comandos.append(f"ALTER TABLE {nome} ALTER COLUMN {nome_coluna} COMMENT '{_escapar(comentario)}'")
     return comandos
+
+
+def ddl_adicionar_colunas(camada: str, chave: str, colunas_existentes: list[str]) -> str | None:
+    """
+    ALTER TABLE ... ADD COLUMNS para as colunas da especificacao que ainda nao existem na
+    tabela. E a evolucao de esquema controlada: nova coluna entra na especificacao, o
+    pipeline a cria na proxima execucao, sem recriar a tabela nem perder dados.
+    Devolve None quando nao ha nada a adicionar. Colunas removidas da especificacao NAO
+    sao apagadas (decisao conservadora: apagar coluna e acao manual).
+    """
+    existentes = {c.lower() for c in colunas_existentes}
+    novas = [(n, t, c) for n, t, c in colunas(camada, chave) if n.lower() not in existentes]
+    if not novas:
+        return None
+    partes = ", ".join(f"{n} {t} COMMENT '{_escapar(c)}'" for n, t, c in novas)
+    return f"ALTER TABLE {nome_tabela(camada, chave)} ADD COLUMNS ({partes})"
 
 
 def todas_as_tabelas() -> list[tuple[str, str]]:

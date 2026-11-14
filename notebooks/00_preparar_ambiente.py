@@ -20,7 +20,8 @@ if RAIZ not in sys.path:
     sys.path.insert(0, RAIZ)
 
 from config.configuracoes import CATALOGO, SCHEMA_BRONZE, VOLUME_BRUTO, schema_completo
-from src.catalogo.tabelas import ddl_comentarios, ddl_criar_tabela, todas_as_tabelas
+from src.catalogo.tabelas import ddl_adicionar_colunas, ddl_comentarios, ddl_criar_tabela, todas_as_tabelas
+from config.configuracoes import nome_tabela
 
 # COMMAND ----------
 
@@ -45,6 +46,11 @@ print("volume ok:", f"{CATALOGO}.{SCHEMA_BRONZE}.{VOLUME_BRUTO}")
 
 for camada, chave in todas_as_tabelas():
     spark.sql(ddl_criar_tabela(camada, chave))
+    # Evolucao de esquema: colunas novas na especificacao sao adicionadas a tabela existente.
+    alteracao = ddl_adicionar_colunas(camada, chave, spark.table(nome_tabela(camada, chave)).columns)
+    if alteracao:
+        spark.sql(alteracao)
+        print("  colunas adicionadas em", camada, chave)
     for comando in ddl_comentarios(camada, chave):
         spark.sql(comando)
     print("tabela ok:", camada, chave)
