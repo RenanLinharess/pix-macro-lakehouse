@@ -1,4 +1,3 @@
-/// Cada UF/mes aponta para o mes da tabela de indicadores (uma linha por mes).
 relationship uf_para_indicadores
 	fromColumn: pix_uf_mensal.data_referencia
 	toColumn: indicadores_mensais.data_referencia
