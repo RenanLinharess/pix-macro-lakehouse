@@ -1,0 +1,138 @@
+/// Pix pago por residentes de cada UF, por mes (tabela gold).
+table pix_uf_mensal
+
+	/// Valor pago via Pix pelas UFs e meses selecionados.
+	measure 'Valor Pix UF' = SUM(pix_uf_mensal[valor])
+		formatString: "R$" #,##0
+
+	/// Transacoes pagas pelas UFs e meses selecionados.
+	measure 'Transacoes Pix UF' = SUM(pix_uf_mensal[quantidade])
+		formatString: #,##0
+
+	/// Soma das pessoas pagadoras distintas por municipio.
+	measure 'Pessoas Pagadoras' = SUM(pix_uf_mensal[pessoas_pagadoras])
+		formatString: #,##0
+
+	/// Intensidade de uso: valor pago dividido pelas pessoas que pagaram.
+	measure 'Valor por Pessoa' = DIVIDE([Valor Pix UF], [Pessoas Pagadoras])
+		formatString: "R$" #,##0
+
+	/// Uso no dia a dia: transacoes de pessoas fisicas por pessoa fisica pagadora.
+	measure 'Transacoes por Pessoa PF' = DIVIDE(SUM(pix_uf_mensal[quantidade_pf]), SUM(pix_uf_mensal[pessoas_pagadoras_pf]))
+		formatString: 0.0
+
+	/// Participacao da selecao no total nacional do mesmo periodo.
+	/// REMOVEFILTERS(uf) recalcula o total sem o filtro de UF, mantendo o de mes.
+	measure 'Participacao Nacional' = DIVIDE([Valor Pix UF], CALCULATE([Valor Pix UF], REMOVEFILTERS(pix_uf_mensal[uf])))
+		formatString: 0.0%
+
+	column ano_mes
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: ano_mes
+
+	column data_referencia
+		dataType: dateTime
+		formatString: mmm/yyyy
+		summarizeBy: none
+		sourceColumn: data_referencia
+
+	column uf
+		dataType: string
+		summarizeBy: none
+		sourceColumn: uf
+
+	column regiao
+		dataType: string
+		summarizeBy: none
+		sourceColumn: regiao
+
+	column quantidade
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: quantidade
+
+	column valor
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: sum
+		sourceColumn: valor
+
+	column pessoas_pagadoras
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: pessoas_pagadoras
+
+	column municipios
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: municipios
+
+	column valor_por_pessoa
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: none
+		sourceColumn: valor_por_pessoa
+
+	column participacao_nacional_valor_pct
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: participacao_nacional_valor_pct
+
+	column valor_var_12m_pct
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: valor_var_12m_pct
+
+	column quantidade_pf
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: quantidade_pf
+
+	column valor_pf
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: sum
+		sourceColumn: valor_pf
+
+	column pessoas_pagadoras_pf
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: pessoas_pagadoras_pf
+
+	column transacoes_por_pessoa_pf
+		dataType: decimal
+		formatString: 0.0
+		summarizeBy: none
+		sourceColumn: transacoes_por_pessoa_pf
+
+	column valor_por_pessoa_pf
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: none
+		sourceColumn: valor_por_pessoa_pf
+
+	column atualizado_em
+		dataType: dateTime
+		isHidden
+		summarizeBy: none
+		sourceColumn: atualizado_em
+
+	partition pix_uf_mensal = m
+		mode: import
+		source =
+				let
+					Origem = DatabricksMultiCloud.Catalogs(ServidorDatabricks, CaminhoHttp, [Catalog = null, Database = null, EnableAutomaticProxyDiscovery = null, Implementation = "2.0"]),
+					CatalogoUC = Origem{[Name = Catalogo, Kind = "Database"]}[Data],
+					Schema = CatalogoUC{[Name = SchemaGold, Kind = "Schema"]}[Data],
+					Tabela = Schema{[Name = "pix_uf_mensal", Kind = "Table"]}[Data]
+				in
+					Tabela
+

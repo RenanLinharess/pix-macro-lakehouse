@@ -336,5 +336,52 @@ prod, mudando so variaveis.
 
 ## 8. Dashboard AI/BI e Power BI
 
-(Esta secao sera completada depois da publicacao do dashboard, com os visuais escolhidos,
-o porque de cada um e o passo a passo de conexao do Power BI ao SQL warehouse.)
+Arquivos: `dashboards/pix_macro.lvdash.json`, `resources/dashboard_pix_macro.dashboard.yml`,
+`powerbi/` e `docs/powerbi.md`.
+
+### Conceitos
+
+- **Dashboard como codigo.** O dashboard AI/BI e um JSON versionado e publicado pelo bundle,
+  junto com o job. Datasets (SQL) e widgets ficam no mesmo arquivo; o catalogo e o schema
+  vem de fora (`dataset_catalog`, `dataset_schema`), entao as consultas usam so o nome da
+  tabela e o mesmo JSON serve para dev e prod.
+- **Um dataset, varios widgets.** Os cartoes e os graficos de serie usam o mesmo dataset
+  `ds_indicadores`; clicar num grafico filtra os outros. Datasets separados so quando a
+  granularidade e diferente (ranking do ultimo mes, capital x interior).
+- **Percentual como fracao.** A gold guarda percentuais de 0 a 100 (legiveis em SQL); o
+  dashboard divide por 100 porque o formato `number-percent` espera 0 a 1.
+- **Historia antes de grafico.** Cada visual responde uma frase: "o Pix cresceu com a Selic
+  subindo e descendo", "o ticket medio caiu", "quanto do Pix do estado vem do interior".
+- **Razao de somas.** "Transacoes por pessoa" e `SUM(transacoes) / SUM(pessoas)`, nunca a media
+  das razoes por municipio. No Power BI isso vira a medida `Transacoes por Pessoa PF`.
+
+### Visuais escolhidos e o porque
+
+| Visual | Pergunta que responde |
+|---|---|
+| 4 cartoes (valor, transacoes, crescimento 12m, IPCA 12m) | Tamanho atual e ritmo |
+| Combo barras (valor Pix) + linha (Selic) | O Pix depende do ciclo de juros? Nao. |
+| Linha do ticket medio | O uso mudou de natureza? Sim: caiu pela metade. |
+| Linha IPCA 12m e Selic | Contexto macro no mesmo periodo |
+| Barras por UF (transacoes por pessoa fisica) | Onde o Pix e mais usado no dia a dia |
+| Barras 100% capital x interior, com filtro de UF | Interiorizacao do uso (RS como padrao) |
+
+### Perguntas de entrevista
+
+**"Por que voce fez o dashboard no Databricks e tambem no Power BI?"**
+Como eu responderia: o AI/BI mostra que sei entregar valor dentro da plataforma, perto do dado
+e sem copiar nada. O Power BI e a ferramenta que a maioria das areas de negocio usa; mostrar
+o mesmo modelo nele, com medidas DAX documentadas e projeto versionado em texto, prova que
+consigo falar as duas linguas.
+
+**"Como voce garante que os dois dashboards mostram o mesmo numero?"**
+Como eu responderia: os dois leem as mesmas tabelas gold, que sao a unica fonte dos
+indicadores. Nenhuma regra de negocio vive no dashboard; o que e calculo esta na gold ou nas
+funcoes testadas.
+
+### Exercicios
+
+1. Adicione ao dashboard AI/BI um filtro global de periodo (`filter-date-range-picker`) e
+   observe quais widgets ele afeta e por que o ranking do ultimo mes nao e afetado.
+2. Monte no Power BI a pagina "Visao geral" seguindo `docs/powerbi.md` e compare os numeros
+   dos cartoes com os do dashboard AI/BI para o mesmo mes.

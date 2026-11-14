@@ -1,0 +1,13 @@
+/// Hostname do SQL warehouse do Databricks (Server hostname). Ajuste em
+/// Transformar dados > Gerenciar parametros se usar outro workspace.
+expression ServidorDatabricks = "dbc-adab8010-fa61.cloud.databricks.com" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+/// HTTP Path do SQL warehouse (Free Edition: Serverless Starter Warehouse).
+expression CaminhoHttp = "/sql/1.0/warehouses/34554733c53d57ce" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+/// Catalogo do Unity Catalog com as tabelas gold.
+expression Catalogo = "workspace" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+/// Schema gold.
+expression SchemaGold = "pix_macro_gold" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+

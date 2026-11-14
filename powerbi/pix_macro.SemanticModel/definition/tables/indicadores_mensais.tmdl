@@ -1,0 +1,131 @@
+/// Painel mensal: Pix, Selic e IPCA. Uma linha por mes desde nov/2020 (tabela gold).
+table indicadores_mensais
+
+	/// Valor total liquidado via Pix no periodo selecionado.
+	measure 'Valor Pix' = SUM(indicadores_mensais[pix_valor])
+		formatString: "R$" #,##0
+
+	/// Quantidade de transacoes Pix no periodo selecionado.
+	measure 'Transacoes Pix' = SUM(indicadores_mensais[pix_quantidade])
+		formatString: #,##0
+
+	/// Valor medio por transacao. DIVIDE evita erro de divisao por zero.
+	measure 'Ticket Medio' = DIVIDE([Valor Pix], [Transacoes Pix])
+		formatString: "R$" #,##0.00
+
+	/// Media da meta Selic (% a.a.) nos meses selecionados.
+	measure 'Selic Media' = AVERAGE(indicadores_mensais[selic_media])
+		formatString: 0.00
+
+	/// IPCA acumulado em 12 meses no ultimo mes do periodo selecionado.
+	measure 'IPCA 12 Meses' =
+			CALCULATE(
+				MAX(indicadores_mensais[ipca_acumulado_12m]),
+				LASTDATE(indicadores_mensais[data_referencia])
+			)
+		formatString: 0.00
+
+	/// Valor Pix do mesmo mes do ano anterior ao ultimo mes selecionado.
+	/// EDATE recua 12 meses; REMOVEFILTERS tira o filtro de mes para buscar o outro ano.
+	measure 'Valor Pix 12 Meses Atras' =
+			VAR UltimoMes = MAX(indicadores_mensais[data_referencia])
+			RETURN
+				CALCULATE(
+					[Valor Pix],
+					REMOVEFILTERS(indicadores_mensais),
+					indicadores_mensais[data_referencia] = EDATE(UltimoMes, -12)
+				)
+		formatString: "R$" #,##0
+
+	/// Crescimento do valor Pix em relacao a 12 meses antes.
+	measure 'Crescimento Valor 12m' = DIVIDE([Valor Pix] - [Valor Pix 12 Meses Atras], [Valor Pix 12 Meses Atras])
+		formatString: 0.0%
+
+	column ano_mes
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: ano_mes
+
+	column data_referencia
+		dataType: dateTime
+		formatString: mmm/yyyy
+		summarizeBy: none
+		sourceColumn: data_referencia
+
+	column pix_quantidade
+		dataType: int64
+		formatString: #,##0
+		summarizeBy: sum
+		sourceColumn: pix_quantidade
+
+	column pix_valor
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: sum
+		sourceColumn: pix_valor
+
+	column pix_ticket_medio
+		dataType: decimal
+		formatString: #,##0.00
+		summarizeBy: none
+		sourceColumn: pix_ticket_medio
+
+	column pix_quantidade_var_mensal_pct
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: pix_quantidade_var_mensal_pct
+
+	column pix_quantidade_var_12m_pct
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: pix_quantidade_var_12m_pct
+
+	column pix_valor_var_mensal_pct
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: pix_valor_var_mensal_pct
+
+	column pix_valor_var_12m_pct
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: pix_valor_var_12m_pct
+
+	column selic_media
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: selic_media
+
+	column ipca_variacao_mensal
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: ipca_variacao_mensal
+
+	column ipca_acumulado_12m
+		dataType: decimal
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: ipca_acumulado_12m
+
+	column atualizado_em
+		dataType: dateTime
+		isHidden
+		summarizeBy: none
+		sourceColumn: atualizado_em
+
+	partition indicadores_mensais = m
+		mode: import
+		source =
+				let
+					Origem = DatabricksMultiCloud.Catalogs(ServidorDatabricks, CaminhoHttp, [Catalog = null, Database = null, EnableAutomaticProxyDiscovery = null, Implementation = "2.0"]),
+					CatalogoUC = Origem{[Name = Catalogo, Kind = "Database"]}[Data],
+					Schema = CatalogoUC{[Name = SchemaGold, Kind = "Schema"]}[Data],
+					Tabela = Schema{[Name = "indicadores_mensais", Kind = "Table"]}[Data]
+				in
+					Tabela
+
