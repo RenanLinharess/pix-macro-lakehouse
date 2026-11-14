@@ -33,6 +33,11 @@ governanca no Unity Catalog e reprodutibilidade aparecem em primeiro plano.
   pago no pais, mas o uso mais intenso por pessoa fisica esta no Norte: no Amazonas cada
   pessoa que pagou via Pix fez em media 63 transacoes em out/2026 (Amapa 60, Para 55),
   sinal de que o Pix substitui dinheiro e agencia onde o atendimento bancario e mais escasso.
+- **Cooperativas de credito (fase 1.5).** 736 cooperativas em funcionamento em nov/2026, 702
+  singulares. Minas Gerais (156) e Sao Paulo (150) lideram em quantidade de sedes; o Rio Grande
+  do Sul tem 81 (11% do pais), 44 delas de livre admissao, e Santa Catarina 85. O Sul concentra
+  32% das cooperativas do pais com cerca de 15% da populacao (IBGE, Censo 2022), o que ajuda a
+  explicar a forca do Pix no interior gaucho.
 - **Qualidade verificada entre fontes.** As duas fontes do Pix do BCB (nacional e por municipio)
   batem dentro de 0,1% em 68 dos 72 meses; os 4 meses divergentes (3% a 6,5%) estao registrados
   na tabela de auditoria e sinalizados como aviso.
