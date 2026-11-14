@@ -24,6 +24,11 @@ O modelo le as tres tabelas gold do Databricks pelo conector **Databricks** (ADB
 com o botao Atualizar. Para este volume (poucos milhares de linhas) Import e mais rapido e
 funciona offline; DirectQuery seria a escolha se a tabela fosse grande ou mudasse a toda hora.
 
+> Licao aprendida ao abrir o projeto pela primeira vez: em TMDL, um comentario `///` vira a
+> propriedade `description` do objeto seguinte. Tabela, coluna, medida, modelo e expressao
+> aceitam; **relacionamento nao**, e o Power BI recusa o projeto inteiro com "A propriedade
+> 'description' e desconhecida". Por isso `relationships.tmdl` nao tem comentarios.
+
 ## Abrir e atualizar pela primeira vez
 
 1. Abra o Power BI Desktop e use **Arquivo > Abrir relatorio > Procurar relatorios**, escolhendo
