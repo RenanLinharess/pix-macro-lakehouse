@@ -159,6 +159,34 @@ print("pix_capital_interior_mensal:", gravar_tabela(pix_capital_interior, "gold"
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ## Cooperativas de credito por UF (fase 1.5)
+# MAGIC Quantas cooperativas tem sede em cada estado, por classe, e a quantas centrais diferentes
+# MAGIC as singulares estao filiadas. Nenhum sistema e nomeado: o recorte e por UF.
+
+# COMMAND ----------
+
+coop = spark.table(nome_tabela("silver", "cooperativas"))
+classe = F.lower(F.coalesce(F.col("classe"), F.lit("")))
+criterio = F.lower(F.coalesce(F.col("criterio_associacao"), F.lit("")))
+
+cooperativas_uf = (
+    coop.groupBy("uf", "data_referencia")
+    .agg(
+        F.count("*").alias("total"),
+        F.sum(F.when(classe == "singular", 1).otherwise(0)).alias("singulares"),
+        F.sum(F.when(classe == "central", 1).otherwise(0)).alias("centrais"),
+        F.sum(F.when(classe.startswith("confedera"), 1).otherwise(0)).alias("confederacoes"),
+        F.sum(F.when((classe == "singular") & criterio.startswith("livre admiss"), 1).otherwise(0)).alias("livre_admissao"),
+        F.countDistinct(F.when(classe == "singular", F.col("central_filiacao"))).alias("centrais_distintas"),
+    )
+    .withColumn("participacao_nacional_pct", F.col("total") / F.sum("total").over(Window.partitionBy("data_referencia")) * 100)
+    .withColumn("atualizado_em", F.lit(AGORA))
+)
+print("cooperativas_uf:", gravar_tabela(cooperativas_uf, "gold", "cooperativas_uf"), "linhas")
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ## Conferencia
 # MAGIC Ultimos 12 meses dos indicadores e o ranking de UFs no ultimo mes.
 

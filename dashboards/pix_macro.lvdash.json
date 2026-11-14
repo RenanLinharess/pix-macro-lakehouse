@@ -42,6 +42,17 @@
         "WHERE uf <> 'ND'\n",
         "ORDER BY data_referencia, tipo_localidade"
       ]
+    },
+    {
+      "name": "ds_cooperativas_uf",
+      "displayName": "Cooperativas de credito por UF",
+      "queryLines": [
+        "SELECT uf AS uf_sede, data_referencia, total, singulares, centrais, confederacoes, livre_admissao, centrais_distintas,\n",
+        "       participacao_nacional_pct / 100 AS participacao_nacional,\n",
+        "       CASE WHEN uf = 'RS' THEN 'Rio Grande do Sul' ELSE 'Demais UFs' END AS destaque\n",
+        "FROM cooperativas_uf\n",
+        "ORDER BY total DESC"
+      ]
     }
   ],
   "pages": [
@@ -450,6 +461,171 @@
             }
           },
           "position": {"x": 7, "y": 21, "width": 5, "height": 6}
+        }
+      ]
+    },
+    {
+      "name": "cooperativas",
+      "displayName": "Cooperativas de credito",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "coop_cabecalho",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Onde estao as cooperativas de credito\n",
+                "\n",
+                "Cadastro de instituicoes em funcionamento do Banco Central. Cooperativas de credito sao instituicoes financeiras cujos donos sao os proprios associados; elas tendem a se concentrar onde a economia regional e forte e o atendimento bancario tradicional e mais escasso. O Sul e o Sudeste concentram as sedes; o Rio Grande do Sul aparece em destaque."
+              ]
+            }
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "coop_kpi_total",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cooperativas_uf",
+                  "fields": [{"name": "sum(total)", "expression": "SUM(`total`)"}],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum(total)", "displayName": "Cooperativas em funcionamento", "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 0}}}},
+              "frame": {"title": "Cooperativas em funcionamento no pais", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 3, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "coop_kpi_singulares",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cooperativas_uf",
+                  "fields": [{"name": "sum(singulares)", "expression": "SUM(`singulares`)"}],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum(singulares)", "displayName": "Singulares", "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 0}}}},
+              "frame": {"title": "Cooperativas singulares (atendem associados)", "showTitle": true}
+            }
+          },
+          "position": {"x": 4, "y": 3, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "coop_kpi_livre",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cooperativas_uf",
+                  "fields": [{"name": "sum(livre_admissao)", "expression": "SUM(`livre_admissao`)"}],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum(livre_admissao)", "displayName": "Livre admissao", "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 0}}}},
+              "frame": {"title": "Singulares de livre admissao (qualquer pessoa pode se associar)", "showTitle": true}
+            }
+          },
+          "position": {"x": 8, "y": 3, "width": 4, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "coop_por_uf",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cooperativas_uf",
+                  "fields": [
+                    {"name": "uf_sede", "expression": "`uf_sede`"},
+                    {"name": "sum(total)", "expression": "SUM(`total`)"},
+                    {"name": "destaque", "expression": "`destaque`"}
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "sum(total)", "scale": {"type": "quantitative"}, "displayName": "Cooperativas com sede na UF"},
+                "y": {"fieldName": "uf_sede", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
+                "color": {
+                  "fieldName": "destaque",
+                  "scale": {"type": "categorical", "mappings": [
+                    {"value": "Rio Grande do Sul", "color": "#FE9000"},
+                    {"value": "Demais UFs", "color": "#3C6997"}
+                  ]},
+                  "displayName": ""
+                },
+                "label": {"show": true}
+              },
+              "frame": {"title": "Cooperativas de credito por UF da sede", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 6, "width": 7, "height": 8}
+        },
+        {
+          "widget": {
+            "name": "coop_tabela",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_cooperativas_uf",
+                  "fields": [
+                    {"name": "uf_sede", "expression": "`uf_sede`"},
+                    {"name": "total", "expression": "`total`"},
+                    {"name": "singulares", "expression": "`singulares`"},
+                    {"name": "centrais", "expression": "`centrais`"},
+                    {"name": "livre_admissao", "expression": "`livre_admissao`"},
+                    {"name": "centrais_distintas", "expression": "`centrais_distintas`"},
+                    {"name": "participacao_nacional", "expression": "`participacao_nacional`"}
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {"fieldName": "uf_sede", "displayName": "UF"},
+                  {"fieldName": "total", "displayName": "Total"},
+                  {"fieldName": "singulares", "displayName": "Singulares"},
+                  {"fieldName": "centrais", "displayName": "Centrais"},
+                  {"fieldName": "livre_admissao", "displayName": "Livre admissao"},
+                  {"fieldName": "centrais_distintas", "displayName": "Centrais distintas"},
+                  {"fieldName": "participacao_nacional", "displayName": "Participacao nacional", "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 1}}}
+                ]
+              },
+              "frame": {"title": "Detalhe por UF", "showTitle": true}
+            }
+          },
+          "position": {"x": 7, "y": 6, "width": 5, "height": 8}
         }
       ]
     }

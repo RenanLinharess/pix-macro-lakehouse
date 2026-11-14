@@ -199,6 +199,39 @@ print("base_mensal:", gravar_tabela(base_mensal, "silver", "base_mensal"), "linh
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ## Cooperativas de credito (fase 1.5)
+# MAGIC Foto mais recente do cadastro, sem dados de contato (minimizacao: o que nao e usado nao e
+# MAGIC copiado). Um CNPJ repetido no cadastro e resolvido com `row_number`.
+
+# COMMAND ----------
+
+bronze_coop = spark.table(nome_tabela("bronze", "cooperativas"))
+ultima_foto = bronze_coop.agg(F.max("baixado_em")).collect()[0][0]
+janela_cnpj = Window.partitionBy("CNPJ").orderBy(F.col("NOME_INSTITUICAO"))
+
+cooperativas = (
+    bronze_coop.filter(F.col("baixado_em") == ultima_foto)
+    .withColumn("posicao", F.row_number().over(janela_cnpj))
+    .filter(F.col("posicao") == 1)
+    .select(
+        F.col("CNPJ").alias("cnpj_base"),
+        F.col("NOME_INSTITUICAO").alias("nome"),
+        F.col("CLASSE").alias("classe"),
+        F.col("ASSOCIACAO").alias("criterio_associacao"),
+        F.col("CATEGCOOPSING").alias("categoria"),
+        F.when(F.trim(F.col("FILIACAO")) == "", None).otherwise(F.col("FILIACAO")).alias("central_filiacao"),
+        F.col("MUNICIPIO").alias("municipio"),
+        F.col("MUNICIPIO_IBGE").cast("int").alias("codigo_ibge_municipio"),
+        F.col("UF").alias("uf"),
+        F.to_date(F.col("baixado_em")).alias("data_referencia"),
+    )
+    .withColumn("atualizado_em", F.lit(AGORA))
+)
+print("cooperativas:", gravar_tabela(cooperativas, "silver", "cooperativas"), "linhas (foto de", ultima_foto, ")")
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ## Qualidade de dados
 # MAGIC O Spark mede (contagens, minimos, maximos); as regras em `src/transformacoes/qualidade.py`
 # MAGIC decidem. Cada resultado vira uma linha na tabela de auditoria.
@@ -258,6 +291,12 @@ registrar("silver", "base_mensal", qualidade.checar_continuidade_meses(meses_da_
 registrar("silver", "base_mensal", qualidade.checar_nulos(contar_nulos(df, "pix_quantidade"), "pix_quantidade"))
 registrar("silver", "base_mensal", qualidade.checar_nulos(contar_nulos(df, "selic_media"), "selic_media", maximo_permitido=1), severidade="aviso")
 registrar("silver", "base_mensal", qualidade.checar_nulos(contar_nulos(df, "ipca_variacao_mensal"), "ipca_variacao_mensal", maximo_permitido=1), severidade="aviso")
+
+# cooperativas
+df = spark.table(nome_tabela("silver", "cooperativas"))
+registrar("silver", "cooperativas", qualidade.checar_unicidade(df.count(), df.select("cnpj_base").distinct().count(), "cnpj_base"))
+registrar("silver", "cooperativas", qualidade.checar_nulos(contar_nulos(df, "uf"), "uf"))
+registrar("silver", "cooperativas", qualidade.checar_nulos(contar_nulos(df, "classe"), "classe", maximo_permitido=10), severidade="aviso")
 
 # Reconciliacao entre as duas fontes do Pix: a soma nacional deveria bater com a soma por municipio.
 # Observado na primeira carga (nov/2026): 68 de 72 meses batem dentro de 0,1%; quatro meses
