@@ -29,7 +29,10 @@ governanca no Unity Catalog e reprodutibilidade aparecem em primeiro plano.
   e virou o pagamento do dia a dia: sinal de inclusao financeira e de uso cotidiano.
 - **Interiorizacao.** No Rio Grande do Sul, 73,6% do valor pago via Pix em out/2026 saiu do
   interior (496 municipios) e 26,4% da capital. O dashboard permite comparar qualquer UF.
-- **Concentracao.** Sao Paulo responde por 37,8% do valor pago no pais.
+- **Concentracao de valor, uso cotidiano no Norte.** Sao Paulo responde por 37,8% do valor
+  pago no pais, mas o uso mais intenso por pessoa fisica esta no Norte: no Amazonas cada
+  pessoa que pagou via Pix fez em media 63 transacoes em out/2026 (Amapa 60, Para 55),
+  sinal de que o Pix substitui dinheiro e agencia onde o atendimento bancario e mais escasso.
 - **Qualidade verificada entre fontes.** As duas fontes do Pix do BCB (nacional e por municipio)
   batem dentro de 0,1% em 68 dos 72 meses; os 4 meses divergentes (3% a 6,5%) estao registrados
   na tabela de auditoria e sinalizados como aviso.
