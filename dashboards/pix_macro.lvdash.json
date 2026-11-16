@@ -395,7 +395,7 @@
                   "datasetName": "ds_capital_interior",
                   "fields": [
                     {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
-                    {"name": "sum(valor)", "expression": "SUM(`valor`)"},
+                    {"name": "sum(participacao_uf)", "expression": "SUM(`participacao_uf`)"},
                     {"name": "tipo_localidade", "expression": "`tipo_localidade`"}
                   ],
                   "disaggregated": false
@@ -405,10 +405,10 @@
             "spec": {
               "version": 3,
               "widgetType": "bar",
-              "mark": {"layout": "stack-100"},
               "encodings": {
                 "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
-                "y": {"fieldName": "sum(valor)", "scale": {"type": "quantitative"}, "displayName": "Participacao no valor pago"},
+                "y": {"fieldName": "sum(participacao_uf)", "scale": {"type": "quantitative"}, "displayName": "Participacao no valor pago da UF",
+                      "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 0}}},
                 "color": {
                   "fieldName": "tipo_localidade",
                   "scale": {"type": "categorical", "mappings": [
