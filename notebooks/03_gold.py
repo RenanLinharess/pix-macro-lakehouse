@@ -6,7 +6,7 @@
 # MAGIC - `indicadores_mensais`: crescimento do Pix (mes a mes e 12 meses), Selic media e IPCA
 # MAGIC   acumulado em 12 meses (produto das taxas mensais, nunca soma);
 # MAGIC - `pix_uf_mensal`: Pix pago por residentes de cada UF, participacao nacional e crescimento;
-# MAGIC - `pix_capital_interior_mensal`: capital versus interior em cada UF (interiorizacao do Pix).
+# MAGIC - `pix_capital_interior_mensal`: capital versus interior em cada UF.
 # MAGIC
 # MAGIC A gold e pequena (dezenas a poucos milhares de linhas) e e reconstruida inteira a cada
 # MAGIC execucao: simples, deterministico e idempotente.

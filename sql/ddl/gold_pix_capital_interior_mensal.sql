@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_gold.pix_capital_interior_mensal 
   atualizado_em TIMESTAMP COMMENT 'Momento (UTC) da ultima execucao que gravou a linha'
 )
 USING DELTA
-COMMENT 'Pix pago por residentes da capital versus do interior, por UF e mes. Mostra a interiorizacao do uso do Pix.';
+COMMENT 'Pix pago por residentes da capital versus do interior, por UF e mes.';
 
 -- Comentarios reaplicados a cada execucao do pipeline:
-COMMENT ON TABLE workspace.pix_macro_gold.pix_capital_interior_mensal IS 'Pix pago por residentes da capital versus do interior, por UF e mes. Mostra a interiorizacao do uso do Pix.';
+COMMENT ON TABLE workspace.pix_macro_gold.pix_capital_interior_mensal IS 'Pix pago por residentes da capital versus do interior, por UF e mes.';
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN ano_mes COMMENT 'Mes de referencia no formato AAAAMM';
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN data_referencia COMMENT 'Primeiro dia do mes de referencia';
 ALTER TABLE workspace.pix_macro_gold.pix_capital_interior_mensal ALTER COLUMN uf COMMENT 'Sigla da unidade da federacao';

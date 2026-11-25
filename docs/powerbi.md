@@ -63,9 +63,9 @@ layout, equivalente ao dashboard AI/BI:
    `IPCA 12 Meses`. Filtre a pagina para o ultimo mes com uma segmentacao de `data_referencia`
    (ou use um filtro de pagina "Top N = 1 por data").
 2. **Grafico de colunas e linhas** (combo): eixo = `data_referencia`; colunas = `Valor Pix`;
-   linha = `Selic Media`. Titulo: "O Pix cresceu com a Selic subindo e descendo".
-3. **Linha**: `Ticket Medio` por `data_referencia`. Titulo: "Ticket medio caiu: Pix virou
-   pagamento do dia a dia".
+   linha = `Selic Media` no **eixo Y secundario** (sem ele a Selic some ao lado de trilhoes de
+   reais). Titulo descritivo: "Valor do Pix e meta Selic por mes".
+3. **Linha**: `Ticket Medio` por `data_referencia`. Titulo: "Ticket medio por transacao".
 4. **Barras horizontais**: `Transacoes por Pessoa PF` por `uf`, cor por `regiao`, filtradas no
    ultimo mes e excluindo `ND` (municipio nao informado).
 5. **Colunas 100% empilhadas**: `Valor Pix Localidade` por `data_referencia`, legenda

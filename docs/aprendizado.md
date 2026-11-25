@@ -200,8 +200,8 @@ Arquivo: `notebooks/03_gold.py`, `src/transformacoes/sgs.py`, `src/transformacoe
   para calcular participacao.
 - **Perspectiva do pagador.** No recorte por UF usamos as transacoes feitas por residentes da UF
   (`*_pagador_*`), porque a pergunta e sobre adocao do Pix pela populacao local.
-- **Capital versus interior.** Classificacao pelo codigo IBGE da capital. Mostra interiorizacao
-  do uso, tema caro a quem atua fora dos grandes centros.
+- **Capital versus interior.** Classificacao pelo codigo IBGE da capital. Mostra quanto do valor pago
+  em cada UF vem de fora da capital, e permite comparar com a parcela de pagadores.
 
 ### Por que assim
 
@@ -350,8 +350,9 @@ Arquivos: `dashboards/pix_macro.lvdash.json`, `resources/dashboard_pix_macro.das
   granularidade e diferente (ranking do ultimo mes, capital x interior).
 - **Percentual como fracao.** A gold guarda percentuais de 0 a 100 (legiveis em SQL); o
   dashboard divide por 100 porque o formato `number-percent` espera 0 a 1.
-- **Historia antes de grafico.** Cada visual responde uma frase: "o Pix cresceu com a Selic
-  subindo e descendo", "o ticket medio caiu", "quanto do Pix do estado vem do interior".
+- **Historia antes de grafico.** Cada visual responde uma pergunta descritiva: quanto o Pix
+  cresceu, como o ticket medio mudou, quanto do Pix do estado vem do interior. Duas series no
+  mesmo grafico mostram coincidencia no tempo, nao causa.
 - **Razao de somas.** "Transacoes por pessoa" e `SUM(transacoes) / SUM(pessoas)`, nunca a media
   das razoes por municipio. No Power BI isso vira a medida `Transacoes por Pessoa PF`.
 
@@ -360,11 +361,21 @@ Arquivos: `dashboards/pix_macro.lvdash.json`, `resources/dashboard_pix_macro.das
 | Visual | Pergunta que responde |
 |---|---|
 | 4 cartoes (valor, transacoes, crescimento 12m, IPCA 12m) | Tamanho atual e ritmo |
-| Combo barras (valor Pix) + linha (Selic) | O Pix depende do ciclo de juros? Nao. |
-| Linha do ticket medio | O uso mudou de natureza? Sim: caiu pela metade. |
+| Barras do valor do Pix por mes | Quanto o Pix cresceu, mes a mes |
+| Linha do ticket medio | Como o valor medio por transacao mudou |
 | Linha IPCA 12m e Selic | Contexto macro no mesmo periodo |
-| Barras por UF (transacoes por pessoa fisica) | Onde o Pix e mais usado no dia a dia |
+| Barras por UF (transacoes por pessoa fisica) | Onde cada pagador faz mais transacoes |
 | Barras 100% capital x interior, com filtro de UF | Interiorizacao do uso (RS como padrao) |
+
+### Licao: o que a primeira versao errou
+
+A primeira versao do dashboard tinha um grafico combinado (barras do Pix e linha da Selic) sem
+segundo eixo: a Selic, de 0,02 a 0,15, dividia a escala com trilhoes de reais e sumia. Os
+rankings em barras horizontais tambem nao ordenavam, porque a ordenacao "por valor" usa a
+medida do eixo vertical. E os textos tiravam conclusoes que os dados nao sustentavam, como
+"interiorizacao" no RS, quando o interior tem 85% dos pagadores e so 74% do valor. Conferir o
+grafico renderizado e cada frase contra uma consulta faz parte da entrega.
+
 
 ### Perguntas de entrevista
 

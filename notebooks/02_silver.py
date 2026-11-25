@@ -300,8 +300,10 @@ registrar("silver", "cooperativas", qualidade.checar_nulos(contar_nulos(df, "cla
 
 # Reconciliacao entre as duas fontes do Pix: a soma nacional deveria bater com a soma por municipio.
 # Observado na primeira carga (nov/2026): 68 de 72 meses batem dentro de 0,1%; quatro meses
-# (202011, 202309, 202510, 202602) divergem entre 3% e 6,5% na propria fonte do BCB.
-# Por isso a regra e AVISO (nao bloqueia) e registra quais meses passaram da tolerancia.
+# (202011, 202309, 202510, 202602) divergem entre 3% e 6,5%. Os arquivos municipais desses meses
+# vieram completos (todos os municipios, sem nulos), mas a causa nao foi identificada.
+# Decisao: tolerancia de 0,5% e severidade AVISO, para nao bloquear a gold enquanto a causa e
+# investigada; a regra registra quais meses passaram da tolerancia.
 nacional = spark.table(nome_tabela("silver", "pix_mensal")).groupBy("ano_mes").agg(F.sum("quantidade").alias("qtd_nacional"))
 municipal = (
     spark.table(nome_tabela("silver", "pix_municipio_mensal"))

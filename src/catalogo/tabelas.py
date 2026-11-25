@@ -249,7 +249,7 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
         ],
     },
     ("gold", "pix_capital_interior_mensal"): {
-        "comentario": "Pix pago por residentes da capital versus do interior, por UF e mes. Mostra a interiorizacao do uso do Pix.",
+        "comentario": "Pix pago por residentes da capital versus do interior, por UF e mes.",
         "cluster_by": [],
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),

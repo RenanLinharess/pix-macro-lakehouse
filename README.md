@@ -14,33 +14,44 @@ governanca no Unity Catalog e reprodutibilidade aparecem em primeiro plano.
 
 ## Principais resultados (dados ate outubro de 2026)
 
-| Indicador | Nov/2020 (lancamento) | Out/2026 |
-|---|---|---|
-| Transacoes Pix no mes | 29,5 milhoes | 7,37 bilhoes |
-| Valor liquidado no mes | R$ 25,9 bilhoes | R$ 3,28 trilhoes |
-| Ticket medio | R$ 876 | R$ 445 |
-| Meta Selic (media do mes) | 2,00% a.a. | 13,75% a.a. |
-| IPCA acumulado 12 meses | 4,31% | 4,63% |
+O Pix foi aberto ao publico em 16/11/2020, entao novembro de 2020 e um mes parcial. A
+comparacao parte de dezembro de 2020, o primeiro mes completo. Valores em reais correntes,
+sem correcao pela inflacao.
 
-- **O Pix cresceu nos dois ciclos de juros.** A Selic foi de 2% para 15% ao ano e voltou a cair;
-  o volume do Pix subiu continuamente nos dois cenarios. Em 12 meses ate out/2026 a quantidade de
-  transacoes ainda cresceu 14%.
-- **O ticket medio caiu pela metade.** O Pix deixou de ser transferencia ocasional de valor alto
-  e virou o pagamento do dia a dia: sinal de inclusao financeira e de uso cotidiano.
-- **Interiorizacao.** No Rio Grande do Sul, 73,6% do valor pago via Pix em out/2026 saiu do
-  interior (496 municipios) e 26,4% da capital. O dashboard permite comparar qualquer UF.
-- **Concentracao de valor, uso cotidiano no Norte.** Sao Paulo responde por 37,8% do valor
-  pago no pais, mas o uso mais intenso por pessoa fisica esta no Norte: no Amazonas cada
-  pessoa que pagou via Pix fez em media 63 transacoes em out/2026 (Amapa 60, Para 55),
-  sinal de que o Pix substitui dinheiro e agencia onde o atendimento bancario e mais escasso.
+| Indicador | Dez/2020 | Out/2026 |
+|---|---|---|
+| Transacoes Pix no mes | 124,9 milhoes | 7,37 bilhoes |
+| Valor liquidado no mes | R$ 107,2 bilhoes | R$ 3,28 trilhoes |
+| Ticket medio | R$ 858 | R$ 445 |
+| Meta Selic (media do mes) | 2,00% a.a. | 13,75% a.a. |
+| IPCA acumulado 12 meses | 4,52% | 4,63% |
+
+- **Crescimento.** A quantidade mensal de transacoes multiplicou por 59 e o valor por 31.
+  A quantidade caiu em relacao ao mes anterior em 16 dos 71 meses, 9 deles em janeiro ou
+  fevereiro, mas ficou acima do mesmo mes do ano anterior em todos. Em out/2026 a alta em 12
+  meses foi de 14,2%, a menor da serie.
+- **Juros e inflacao no mesmo periodo.** A meta Selic foi de 2% a 15% ao ano e estava em
+  13,75% em out/2026; o IPCA em 12 meses chegou a 12,1%. O Pix cresceu tanto com juros baixos
+  quanto altos. O projeto mostra as series lado a lado e nao estima efeito causal.
+- **Ticket medio.** Caiu de R$ 858 (dez/2020) para R$ 368 (mar/2024) e subiu para R$ 445
+  (out/2026).
+- **Uso por pessoa fisica.** Em out/2026 o Amazonas teve a maior media de transacoes por
+  pessoa fisica pagadora (62,7), seguido de Amapa (60,2) e Para (54,6). Os tres estados do Sul
+  ficaram nas ultimas posicoes: Rio Grande do Sul em 25o (36,2), Parana em 26o (35,9) e Santa
+  Catarina em 27o (32,1).
+- **Capital x interior no RS.** Em out/2026 o interior respondeu por 73,6% do valor pago via
+  Pix por residentes do estado e reunia 85,3% das pessoas fisicas pagadoras. Desde dez/2020
+  a participacao do interior no valor variou entre 72,8% e 79,2%.
+- **Concentracao.** Sao Paulo respondeu por 37,8% do valor pago no pais em out/2026.
 - **Cooperativas de credito (fase 1.5).** 736 cooperativas em funcionamento em nov/2026, 702
-  singulares. Minas Gerais (156) e Sao Paulo (150) lideram em quantidade de sedes; o Rio Grande
-  do Sul tem 81 (11% do pais), 44 delas de livre admissao, e Santa Catarina 85. O Sul concentra
-  32% das cooperativas do pais com cerca de 15% da populacao (IBGE, Censo 2022), o que ajuda a
-  explicar a forca do Pix no interior gaucho.
+  delas singulares. Minas Gerais (156) e Sao Paulo (150) tem mais sedes; o Rio Grande do Sul
+  tem 81 (11% do pais), 44 de livre admissao. Os tres estados do Sul somam 238 sedes, 32% do
+  total.
 - **Qualidade verificada entre fontes.** As duas fontes do Pix do BCB (nacional e por municipio)
-  batem dentro de 0,1% em 68 dos 72 meses; os 4 meses divergentes (3% a 6,5%) estao registrados
-  na tabela de auditoria e sinalizados como aviso.
+  batem dentro de 0,1% em 68 dos 72 meses. Em 4 meses (nov/2020, set/2023, out/2025 e
+  fev/2026) a soma por municipio fica 3% a 6,5% abaixo da nacional. Os arquivos desses meses
+  vieram completos, com todos os municipios e sem nulos; a causa ainda nao foi identificada.
+  A divergencia fica registrada na tabela de auditoria como aviso.
 
 <!-- Prints do dashboard: pendentes de nova captura. -->
 
