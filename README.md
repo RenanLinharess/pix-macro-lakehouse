@@ -42,15 +42,7 @@ governanca no Unity Catalog e reprodutibilidade aparecem em primeiro plano.
   batem dentro de 0,1% em 68 dos 72 meses; os 4 meses divergentes (3% a 6,5%) estao registrados
   na tabela de auditoria e sinalizados como aviso.
 
-### Dashboard AI/BI (Databricks)
-
-![Visao geral: indicadores, Pix x Selic e ticket medio](docs/img/dashboard_visao_geral_topo.jpg)
-
-![Juros e inflacao no periodo e uso do Pix por pessoa fisica por UF](docs/img/dashboard_visao_geral_meio.jpg)
-
-![Capital x interior no RS: participacao no valor pago e transacoes por pessoa fisica](docs/img/dashboard_capital_interior.jpg)
-
-![Cooperativas de credito por UF](docs/img/dashboard_cooperativas.jpg)
+<!-- Prints do dashboard: pendentes de nova captura. -->
 
 ## Arquitetura
 
