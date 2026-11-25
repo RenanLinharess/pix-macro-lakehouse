@@ -69,7 +69,7 @@
               "lines": [
                 "# Pix no Brasil: crescimento, juros e inflacao\n",
                 "\n",
-                "Desde o lancamento, em novembro de 2020, o Pix cresceu continuamente mesmo com a Selic subindo de 2% para mais de 13% ao ano e a inflacao oscilando. O ticket medio caiu ao longo do tempo: o Pix deixou de ser transferencia ocasional e virou o pagamento do dia a dia, sinal de inclusao financeira. O recorte por UF mostra onde o uso e mais intenso e quanto do volume de cada estado vem do interior, nao da capital. Fonte: dados abertos do Banco Central (Pix, SGS 432 e 433)."
+                "O Pix foi lancado ao publico em 16/11/2020; o primeiro mes completo e dez/2020. De dez/2020 a out/2026 a quantidade mensal de transacoes multiplicou por 59 e o valor por 31, em reais correntes (sem correcao pela inflacao). No mesmo periodo a meta Selic foi de 2% a 15% ao ano e estava em 13,75% em out/2026. A quantidade caiu em relacao ao mes anterior em 16 dos 71 meses, 9 deles em janeiro ou fevereiro, mas ficou acima do mesmo mes do ano anterior em todos. Os graficos mostram as series lado a lado; eles nao medem efeito de juros ou inflacao sobre o Pix. Fonte: dados abertos do Banco Central (Pix, SGS 432 e 433)."
               ]
             }
           },
@@ -213,37 +213,23 @@
                   "datasetName": "ds_indicadores",
                   "fields": [
                     {"name": "monthly(data_referencia)", "expression": "DATE_TRUNC(\"MONTH\", `data_referencia`)"},
-                    {"name": "sum(pix_valor)", "expression": "SUM(`pix_valor`)"},
-                    {"name": "avg(selic_media)", "expression": "AVG(`selic_media`)"}
+                    {"name": "sum(pix_valor)", "expression": "SUM(`pix_valor`)"}
                   ],
                   "disaggregated": false
                 }
               }
             ],
             "spec": {
-              "version": 1,
-              "widgetType": "combo",
+              "version": 3,
+              "widgetType": "bar",
               "encodings": {
                 "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
-                "y": {
-                  "scale": {"type": "quantitative"},
-                  "primary": {
-                    "fields": [
-                      {"fieldName": "sum(pix_valor)", "displayName": "Valor movimentado via Pix (R$)",
-                       "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}}
-                    ]
-                  },
-                  "secondary": {
-                    "fields": [
-                      {"fieldName": "avg(selic_media)", "displayName": "Meta Selic (media do mes)",
-                       "format": {"type": "number-percent", "decimalPlaces": {"type": "max", "places": 2}}}
-                    ]
-                  }
-                },
+                "y": {"fieldName": "sum(pix_valor)", "scale": {"type": "quantitative"}, "displayName": "Valor liquidado via Pix (R$)",
+                      "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}},
                 "label": {"show": false}
               },
-              "frame": {"title": "O Pix cresceu com a Selic subindo e descendo", "showTitle": true,
-                        "showDescription": true, "description": "Barras: valor liquidado via Pix no mes. Linha: media mensal da meta Selic. O volume do Pix nao acompanha o ciclo de juros."}
+              "frame": {"title": "Valor liquidado via Pix por mes", "showTitle": true,
+                        "showDescription": true, "description": "Reais correntes, sem correcao pela inflacao. Nov/2020 e mes parcial (lancamento em 16/11). A Selic esta no grafico de juros e inflacao, abaixo, com escala propria."}
             }
           },
           "position": {"x": 0, "y": 7, "width": 8, "height": 6}
@@ -272,8 +258,8 @@
                 "y": {"fieldName": "avg(pix_ticket_medio)", "scale": {"type": "quantitative"}, "displayName": "Ticket medio (R$)",
                       "format": {"type": "number-currency", "currencyCode": "BRL", "decimalPlaces": {"type": "max", "places": 0}}}
               },
-              "frame": {"title": "Ticket medio caiu: Pix virou pagamento do dia a dia", "showTitle": true,
-                        "showDescription": true, "description": "Valor medio por transacao (valor / quantidade)."}
+              "frame": {"title": "Ticket medio por transacao", "showTitle": true,
+                        "showDescription": true, "description": "Valor / quantidade, em reais correntes. Caiu de R$ 858 (dez/2020) a R$ 368 (mar/2024) e subiu para R$ 445 (out/2026)."}
             }
           },
           "position": {"x": 8, "y": 7, "width": 4, "height": 6}
@@ -311,7 +297,7 @@
                 }
               },
               "frame": {"title": "Juros e inflacao no mesmo periodo", "showTitle": true,
-                        "showDescription": true, "description": "A Selic sobe depois da inflacao e cai quando ela cede. O Pix cresce nos dois cenarios."}
+                        "showDescription": true, "description": "IPCA acumulado em 12 meses (produto das taxas mensais) e media mensal da meta Selic."}
             }
           },
           "position": {"x": 0, "y": 13, "width": 6, "height": 6}
@@ -337,13 +323,13 @@
               "version": 3,
               "widgetType": "bar",
               "encodings": {
-                "x": {"fieldName": "sum(transacoes_por_pessoa_pf)", "scale": {"type": "quantitative"}, "displayName": "Transacoes por pessoa fisica no mes",
+                "x": {"fieldName": "sigla_uf", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
+                "y": {"fieldName": "sum(transacoes_por_pessoa_pf)", "scale": {"type": "quantitative"}, "displayName": "Transacoes por pessoa fisica no mes",
                       "format": {"type": "number", "decimalPlaces": {"type": "max", "places": 1}}},
-                "y": {"fieldName": "sigla_uf", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
                 "color": {"fieldName": "regiao", "scale": {"type": "categorical"}, "displayName": "Regiao"},
-                "label": {"show": true}
+                "label": {"show": false}
               },
-              "frame": {"title": "Uso do Pix no dia a dia por UF (ultimo mes)", "showTitle": true,
+              "frame": {"title": "Transacoes por pessoa fisica pagadora, por UF (ultimo mes)", "showTitle": true,
                         "showDescription": true, "description": "Transacoes pagas por pessoa fisica dividido pelas pessoas fisicas que pagaram no mes. Cor por regiao."}
             }
           },
@@ -379,7 +365,7 @@
             "name": "texto_interior",
             "multilineTextboxSpec": {
               "lines": [
-                "**Capital x interior.** Quanto do valor pago via Pix em cada estado vem de fora da capital. Estados com economia regional forte e rede de cooperativas de credito no interior tendem a ter participacao alta do interior. Escolha a UF ao lado."
+                "**Capital x interior.** Participacao da capital e do interior no valor pago via Pix por residentes da UF escolhida ao lado. No RS, em out/2026, o interior respondeu por 73,6% do valor pago e reunia 85,3% das pessoas fisicas pagadoras."
               ]
             }
           },
@@ -477,7 +463,7 @@
               "lines": [
                 "# Onde estao as cooperativas de credito\n",
                 "\n",
-                "Cadastro de instituicoes em funcionamento do Banco Central. Cooperativas de credito sao instituicoes financeiras cujos donos sao os proprios associados; elas tendem a se concentrar onde a economia regional e forte e o atendimento bancario tradicional e mais escasso. O Sul e o Sudeste concentram as sedes; o Rio Grande do Sul aparece em destaque."
+                "Cadastro de cooperativas de credito em funcionamento, publicado pelo Banco Central (foto de nov/2026). Cooperativas de credito sao instituicoes financeiras cujos donos sao os proprios associados. A contagem usa a UF da sede, nao os lugares onde a cooperativa atende."
               ]
             }
           },
@@ -570,8 +556,8 @@
               "version": 3,
               "widgetType": "bar",
               "encodings": {
-                "x": {"fieldName": "sum(total)", "scale": {"type": "quantitative"}, "displayName": "Cooperativas com sede na UF"},
-                "y": {"fieldName": "uf_sede", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
+                "x": {"fieldName": "uf_sede", "scale": {"type": "categorical", "sort": {"by": "value"}}, "displayName": "UF"},
+                "y": {"fieldName": "sum(total)", "scale": {"type": "quantitative"}, "displayName": "Cooperativas com sede na UF"},
                 "color": {
                   "fieldName": "destaque",
                   "scale": {"type": "categorical", "mappings": [
