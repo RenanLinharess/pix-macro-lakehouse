@@ -21,10 +21,10 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_bronze.pix_estatisticas (
 )
 USING DELTA
 CLUSTER BY (AnoMes)
-COMMENT 'Transacoes Pix liquidadas por mes, como vieram da API Olinda do BCB (EstatisticasTransacoesPix). Uma linha por combinacao de dimensoes.';
+COMMENT 'Transacoes Pix liquidadas no SPI por mes, como vieram da API Olinda do BCB (EstatisticasTransacoesPix). Uma linha por combinacao de dimensoes. Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 
 -- Comentarios reaplicados a cada execucao do pipeline:
-COMMENT ON TABLE workspace.pix_macro_bronze.pix_estatisticas IS 'Transacoes Pix liquidadas por mes, como vieram da API Olinda do BCB (EstatisticasTransacoesPix). Uma linha por combinacao de dimensoes.';
+COMMENT ON TABLE workspace.pix_macro_bronze.pix_estatisticas IS 'Transacoes Pix liquidadas no SPI por mes, como vieram da API Olinda do BCB (EstatisticasTransacoesPix). Uma linha por combinacao de dimensoes. Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 ALTER TABLE workspace.pix_macro_bronze.pix_estatisticas ALTER COLUMN AnoMes COMMENT 'Mes de referencia no formato AAAAMM';
 ALTER TABLE workspace.pix_macro_bronze.pix_estatisticas ALTER COLUMN PAG_PFPJ COMMENT 'Tipo do pagador: PF ou PJ';
 ALTER TABLE workspace.pix_macro_bronze.pix_estatisticas ALTER COLUMN REC_PFPJ COMMENT 'Tipo do recebedor: PF ou PJ';

@@ -1,11 +1,11 @@
 /// Painel mensal: Pix, Selic e IPCA. Uma linha por mes desde nov/2020 (tabela gold).
 table indicadores_mensais
 
-	/// Valor total liquidado via Pix no periodo selecionado.
+	/// Valor do Pix liquidado no SPI no periodo selecionado (nao inclui Pix liquidado nos livros do participante).
 	measure 'Valor Pix' = SUM(indicadores_mensais[pix_valor])
 		formatString: "R$" #,##0
 
-	/// Quantidade de transacoes Pix no periodo selecionado.
+	/// Quantidade de transacoes Pix liquidadas no SPI no periodo selecionado.
 	measure 'Transacoes Pix' = SUM(indicadores_mensais[pix_quantidade])
 		formatString: #,##0
 

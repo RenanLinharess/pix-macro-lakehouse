@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_bronze.pix_municipios (
 )
 USING DELTA
 CLUSTER BY (AnoMes)
-COMMENT 'Transacoes Pix por municipio e mes, como vieram da API Olinda do BCB (TransacoesPixPorMunicipio).';
+COMMENT 'Transacoes Pix por municipio e mes, como vieram da API Olinda do BCB (TransacoesPixPorMunicipio). Mesma cobertura da serie nacional (a soma bate, regra de reconciliacao). Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 
 -- Comentarios reaplicados a cada execucao do pipeline:
-COMMENT ON TABLE workspace.pix_macro_bronze.pix_municipios IS 'Transacoes Pix por municipio e mes, como vieram da API Olinda do BCB (TransacoesPixPorMunicipio).';
+COMMENT ON TABLE workspace.pix_macro_bronze.pix_municipios IS 'Transacoes Pix por municipio e mes, como vieram da API Olinda do BCB (TransacoesPixPorMunicipio). Mesma cobertura da serie nacional (a soma bate, regra de reconciliacao). Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 ALTER TABLE workspace.pix_macro_bronze.pix_municipios ALTER COLUMN AnoMes COMMENT 'Mes de referencia no formato AAAAMM';
 ALTER TABLE workspace.pix_macro_bronze.pix_municipios ALTER COLUMN Municipio_Ibge COMMENT 'Codigo IBGE do municipio (7 digitos)';
 ALTER TABLE workspace.pix_macro_bronze.pix_municipios ALTER COLUMN Municipio COMMENT 'Nome do municipio';

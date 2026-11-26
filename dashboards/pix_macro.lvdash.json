@@ -69,7 +69,7 @@
               "lines": [
                 "# Pix no Brasil: crescimento, juros e inflacao\n",
                 "\n",
-                "O Pix foi lancado ao publico em 16/11/2020; o primeiro mes completo e dez/2020. De dez/2020 a out/2026 a quantidade mensal de transacoes multiplicou por 59 e o valor por 31, em reais correntes (sem correcao pela inflacao). No mesmo periodo a meta Selic foi de 2% a 15% ao ano e estava em 13,75% em out/2026. A quantidade caiu em relacao ao mes anterior em 16 dos 71 meses, 9 deles em janeiro ou fevereiro, mas ficou acima do mesmo mes do ano anterior em todos. Os graficos mostram as series lado a lado; eles nao medem efeito de juros ou inflacao sobre o Pix. Fonte: dados abertos do Banco Central (Pix, SGS 432 e 433)."
+                "O Pix foi lancado ao publico em 16/11/2020; o primeiro mes completo e dez/2020. Os numeros do Pix sao do Pix liquidado no SPI: a serie aberta do BCB nao inclui o Pix liquidado nos livros da propria instituicao, e cobre cerca de 89% das transacoes e 84% do valor dos totais anuais divulgados pelo BC em 2024 e 2025. Nessa serie, de dez/2020 a out/2026 a quantidade mensal de transacoes multiplicou por 59 e o valor por 31, em reais correntes (sem correcao pela inflacao). No mesmo periodo a meta Selic foi de 2% a 15% ao ano e estava em 13,75% em out/2026. A quantidade caiu em relacao ao mes anterior em 16 dos 71 meses, 9 deles em janeiro ou fevereiro, mas ficou acima do mesmo mes do ano anterior em todos. Os graficos mostram as series lado a lado; eles nao medem efeito de juros ou inflacao sobre o Pix. Fonte: dados abertos do Banco Central (Pix, SGS 432 e 433)."
               ]
             }
           },
@@ -97,12 +97,12 @@
               "encodings": {
                 "value": {
                   "fieldName": "max(ultimo_pix_valor)",
-                  "displayName": "Valor movimentado no ultimo mes",
+                  "displayName": "Valor liquidado no SPI no ultimo mes",
                   "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}
                 },
                 "period": {"fieldName": "monthly(data_referencia)"}
               },
-              "frame": {"title": "Valor movimentado no mes (R$)", "showTitle": true}
+              "frame": {"title": "Valor liquidado no SPI no mes (R$)", "showTitle": true}
             }
           },
           "position": {"x": 0, "y": 3, "width": 3, "height": 4}
@@ -134,7 +134,7 @@
                 },
                 "period": {"fieldName": "monthly(data_referencia)"}
               },
-              "frame": {"title": "Transacoes no mes", "showTitle": true}
+              "frame": {"title": "Transacoes liquidadas no SPI no mes", "showTitle": true}
             }
           },
           "position": {"x": 3, "y": 3, "width": 3, "height": 4}
@@ -224,12 +224,12 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {"fieldName": "monthly(data_referencia)", "scale": {"type": "temporal"}, "displayName": "Mes"},
-                "y": {"fieldName": "sum(pix_valor)", "scale": {"type": "quantitative"}, "displayName": "Valor liquidado via Pix (R$)",
+                "y": {"fieldName": "sum(pix_valor)", "scale": {"type": "quantitative"}, "displayName": "Valor liquidado no SPI (R$)",
                       "format": {"type": "number-currency", "currencyCode": "BRL", "abbreviation": "compact", "decimalPlaces": {"type": "max", "places": 1}}},
                 "label": {"show": false}
               },
-              "frame": {"title": "Valor liquidado via Pix por mes", "showTitle": true,
-                        "showDescription": true, "description": "Reais correntes, sem correcao pela inflacao. Nov/2020 e mes parcial (lancamento em 16/11). A Selic esta no grafico de juros e inflacao, abaixo, com escala propria."}
+              "frame": {"title": "Valor do Pix liquidado no SPI por mes", "showTitle": true,
+                        "showDescription": true, "description": "Nao inclui Pix liquidado nos livros da propria instituicao. Reais correntes, sem correcao pela inflacao. Nov/2020 e mes parcial (lancamento em 16/11). A Selic esta no grafico de juros e inflacao, abaixo, com escala propria."}
             }
           },
           "position": {"x": 0, "y": 7, "width": 8, "height": 6}

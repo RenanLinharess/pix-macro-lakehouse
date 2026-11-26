@@ -19,10 +19,10 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_gold.pix_uf_mensal (
   atualizado_em TIMESTAMP COMMENT 'Momento (UTC) da ultima execucao que gravou a linha'
 )
 USING DELTA
-COMMENT 'Pix pago por residentes de cada UF, por mes: volume, pessoas pagadoras, participacao nacional e crescimento em 12 meses.';
+COMMENT 'Pix pago por residentes de cada UF, por mes: volume, pessoas pagadoras, participacao nacional e crescimento em 12 meses. Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 
 -- Comentarios reaplicados a cada execucao do pipeline:
-COMMENT ON TABLE workspace.pix_macro_gold.pix_uf_mensal IS 'Pix pago por residentes de cada UF, por mes: volume, pessoas pagadoras, participacao nacional e crescimento em 12 meses.';
+COMMENT ON TABLE workspace.pix_macro_gold.pix_uf_mensal IS 'Pix pago por residentes de cada UF, por mes: volume, pessoas pagadoras, participacao nacional e crescimento em 12 meses. Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN ano_mes COMMENT 'Mes de referencia no formato AAAAMM';
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN data_referencia COMMENT 'Primeiro dia do mes de referencia';
 ALTER TABLE workspace.pix_macro_gold.pix_uf_mensal ALTER COLUMN uf COMMENT 'Sigla da unidade da federacao do pagador';

@@ -36,7 +36,7 @@ FONTES: dict[str, dict] = {
         "tipo": "olinda_pix",
         "funcao": "EstatisticasTransacoesPix(Database=@Database)",
         "parametro": "@Database",  # mes inicial AAAAMM (a API devolve dali em diante)
-        "descricao": "Transacoes Pix liquidadas por mes, com dimensoes de pagador e recebedor.",
+        "descricao": "Transacoes Pix liquidadas no SPI por mes, com dimensoes de pagador e recebedor (nao inclui Pix liquidado nos livros do participante).",
     },
     "pix_municipios": {
         "tipo": "olinda_pix",

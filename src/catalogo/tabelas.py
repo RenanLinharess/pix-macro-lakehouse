@@ -26,11 +26,15 @@ METADADOS_BRONZE: list[tuple[str, str, str]] = [
 
 _ATUALIZADO_EM = ("atualizado_em", "TIMESTAMP", "Momento (UTC) da ultima execucao que gravou a linha")
 
-# Cada entrada: (camada, chave) -> {"comentario", "colunas": [(nome, tipo, comentario)], "cluster_by": [...]}
+# Cobertura das series abertas do Pix, conforme a descricao do recurso no portal de dados abertos
+# do BCB. Comparando com os totais anuais do BC, cobre ~89% das transacoes (2024 e 2025).
+_COBERTURA_SPI = "Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB)."
+
+# Cada entrada: (camada, chave) ->{"comentario", "colunas": [(nome, tipo, comentario)], "cluster_by": [...]}
 ESPECIFICACAO: dict[tuple[str, str], dict] = {
     # ------------------------------------------------------------------ BRONZE
     ("bronze", "pix_estatisticas"): {
-        "comentario": "Transacoes Pix liquidadas por mes, como vieram da API Olinda do BCB (EstatisticasTransacoesPix). Uma linha por combinacao de dimensoes.",
+        "comentario": "Transacoes Pix liquidadas no SPI por mes, como vieram da API Olinda do BCB (EstatisticasTransacoesPix). Uma linha por combinacao de dimensoes. " + _COBERTURA_SPI,
         "cluster_by": ["AnoMes"],
         "colunas": [
             ("AnoMes", "INT", "Mes de referencia no formato AAAAMM"),
@@ -48,7 +52,7 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
         ],
     },
     ("bronze", "pix_municipios"): {
-        "comentario": "Transacoes Pix por municipio e mes, como vieram da API Olinda do BCB (TransacoesPixPorMunicipio).",
+        "comentario": "Transacoes Pix por municipio e mes, como vieram da API Olinda do BCB (TransacoesPixPorMunicipio). Mesma cobertura da serie nacional (a soma bate, regra de reconciliacao). " + _COBERTURA_SPI,
         "cluster_by": ["AnoMes"],
         "colunas": [
             ("AnoMes", "INT", "Mes de referencia no formato AAAAMM"),
@@ -113,7 +117,7 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
     },
     # ------------------------------------------------------------------ SILVER
     ("silver", "pix_mensal"): {
-        "comentario": "Transacoes Pix por mes e natureza, agregadas a partir do bronze. Exclui o mes corrente (incompleto).",
+        "comentario": "Transacoes Pix por mes e natureza, agregadas a partir do bronze. Exclui o mes corrente (incompleto). " + _COBERTURA_SPI,
         "cluster_by": ["ano_mes"],
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),
@@ -128,7 +132,7 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
         ],
     },
     ("silver", "pix_municipio_mensal"): {
-        "comentario": "Transacoes Pix por municipio e mes, com tipos corrigidos, sigla da UF e classificacao capital/interior. Exclui o mes corrente.",
+        "comentario": "Transacoes Pix por municipio e mes, com tipos corrigidos, sigla da UF e classificacao capital/interior. Exclui o mes corrente. " + _COBERTURA_SPI,
         "cluster_by": ["ano_mes", "uf"],
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),
@@ -181,8 +185,8 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),
             ("data_referencia", "DATE", "Primeiro dia do mes de referencia"),
-            ("pix_quantidade", "BIGINT", "Total de transacoes Pix liquidadas no mes"),
-            ("pix_valor", "DECIMAL(20,2)", "Valor total liquidado via Pix no mes, em reais"),
+            ("pix_quantidade", "BIGINT", "Transacoes Pix liquidadas no SPI no mes (nao e o total do Pix)"),
+            ("pix_valor", "DECIMAL(20,2)", "Valor do Pix liquidado no SPI no mes, em reais (nao e o total do Pix)"),
             ("selic_media", "DECIMAL(8,4)", "Media da meta Selic no mes, em % ao ano"),
             ("ipca_variacao_mensal", "DECIMAL(8,4)", "Variacao do IPCA no mes, em %"),
             _ATUALIZADO_EM,
@@ -207,13 +211,13 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
     },
     # ------------------------------------------------------------------ GOLD
     ("gold", "indicadores_mensais"): {
-        "comentario": "Painel mensal: crescimento do Pix, Selic media e IPCA acumulado em 12 meses. Uma linha por mes desde nov/2020. Alimenta o dashboard.",
+        "comentario": "Painel mensal: crescimento do Pix, Selic media e IPCA acumulado em 12 meses. Uma linha por mes desde nov/2020. Alimenta o dashboard. " + _COBERTURA_SPI,
         "cluster_by": [],
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),
             ("data_referencia", "DATE", "Primeiro dia do mes de referencia"),
-            ("pix_quantidade", "BIGINT", "Total de transacoes Pix no mes"),
-            ("pix_valor", "DECIMAL(20,2)", "Valor total liquidado via Pix no mes, em reais"),
+            ("pix_quantidade", "BIGINT", "Transacoes Pix liquidadas no SPI no mes (nao e o total do Pix)"),
+            ("pix_valor", "DECIMAL(20,2)", "Valor do Pix liquidado no SPI no mes, em reais (nao e o total do Pix)"),
             ("pix_ticket_medio", "DECIMAL(12,2)", "Valor medio por transacao (valor / quantidade), em reais"),
             ("pix_quantidade_var_mensal_pct", "DECIMAL(10,4)", "Variacao da quantidade em relacao ao mes anterior, em %"),
             ("pix_quantidade_var_12m_pct", "DECIMAL(10,4)", "Variacao da quantidade em relacao ao mesmo mes do ano anterior, em %"),
@@ -226,7 +230,7 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
         ],
     },
     ("gold", "pix_uf_mensal"): {
-        "comentario": "Pix pago por residentes de cada UF, por mes: volume, pessoas pagadoras, participacao nacional e crescimento em 12 meses.",
+        "comentario": "Pix pago por residentes de cada UF, por mes: volume, pessoas pagadoras, participacao nacional e crescimento em 12 meses. " + _COBERTURA_SPI,
         "cluster_by": [],
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),
@@ -249,7 +253,7 @@ ESPECIFICACAO: dict[tuple[str, str], dict] = {
         ],
     },
     ("gold", "pix_capital_interior_mensal"): {
-        "comentario": "Pix pago por residentes da capital versus do interior, por UF e mes.",
+        "comentario": "Pix pago por residentes da capital versus do interior, por UF e mes. " + _COBERTURA_SPI,
         "cluster_by": [],
         "colunas": [
             ("ano_mes", "INT", "Mes de referencia no formato AAAAMM"),

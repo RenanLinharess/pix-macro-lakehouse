@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_silver.pix_mensal (
 )
 USING DELTA
 CLUSTER BY (ano_mes)
-COMMENT 'Transacoes Pix por mes e natureza, agregadas a partir do bronze. Exclui o mes corrente (incompleto).';
+COMMENT 'Transacoes Pix por mes e natureza, agregadas a partir do bronze. Exclui o mes corrente (incompleto). Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 
 -- Comentarios reaplicados a cada execucao do pipeline:
-COMMENT ON TABLE workspace.pix_macro_silver.pix_mensal IS 'Transacoes Pix por mes e natureza, agregadas a partir do bronze. Exclui o mes corrente (incompleto).';
+COMMENT ON TABLE workspace.pix_macro_silver.pix_mensal IS 'Transacoes Pix por mes e natureza, agregadas a partir do bronze. Exclui o mes corrente (incompleto). Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 ALTER TABLE workspace.pix_macro_silver.pix_mensal ALTER COLUMN ano_mes COMMENT 'Mes de referencia no formato AAAAMM';
 ALTER TABLE workspace.pix_macro_silver.pix_mensal ALTER COLUMN data_referencia COMMENT 'Primeiro dia do mes de referencia';
 ALTER TABLE workspace.pix_macro_silver.pix_mensal ALTER COLUMN natureza COMMENT 'Natureza da transacao: P2P, P2B, B2B, P2G, G2P etc.';

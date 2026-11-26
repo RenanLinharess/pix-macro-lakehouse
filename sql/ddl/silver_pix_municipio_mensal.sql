@@ -24,10 +24,10 @@ CREATE TABLE IF NOT EXISTS workspace.pix_macro_silver.pix_municipio_mensal (
 )
 USING DELTA
 CLUSTER BY (ano_mes, uf)
-COMMENT 'Transacoes Pix por municipio e mes, com tipos corrigidos, sigla da UF e classificacao capital/interior. Exclui o mes corrente.';
+COMMENT 'Transacoes Pix por municipio e mes, com tipos corrigidos, sigla da UF e classificacao capital/interior. Exclui o mes corrente. Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 
 -- Comentarios reaplicados a cada execucao do pipeline:
-COMMENT ON TABLE workspace.pix_macro_silver.pix_municipio_mensal IS 'Transacoes Pix por municipio e mes, com tipos corrigidos, sigla da UF e classificacao capital/interior. Exclui o mes corrente.';
+COMMENT ON TABLE workspace.pix_macro_silver.pix_municipio_mensal IS 'Transacoes Pix por municipio e mes, com tipos corrigidos, sigla da UF e classificacao capital/interior. Exclui o mes corrente. Cobertura: Pix liquidado no SPI; nao inclui Pix liquidado nos livros do participante (fonte: descricao do recurso no portal de dados abertos do BCB).';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN ano_mes COMMENT 'Mes de referencia no formato AAAAMM';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN data_referencia COMMENT 'Primeiro dia do mes de referencia';
 ALTER TABLE workspace.pix_macro_silver.pix_municipio_mensal ALTER COLUMN codigo_ibge_municipio COMMENT 'Codigo IBGE do municipio (7 digitos)';

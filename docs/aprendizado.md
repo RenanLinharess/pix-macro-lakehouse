@@ -153,9 +153,32 @@ Arquivo: `notebooks/02_silver.py`, `src/transformacoes/sgs.py`, `src/transformac
 - **Severidade.** `erro` interrompe o job antes da gold; `aviso` so registra. O IPCA do ultimo
   mes faltando e aviso; linha duplicada na chave e erro.
 - **Reconciliacao entre fontes.** A soma nacional do Pix deve bater com a soma por municipio.
-  Duas fontes independentes concordando e a melhor evidencia de que o dado esta certo.
+  Duas fontes concordando mostra que o pipeline nao perdeu nada no caminho, mas nao prova
+  que o dado e o universo inteiro: as duas podem ter o mesmo recorte (ver a licao abaixo).
 - **Tabela de auditoria.** Historico de todas as execucoes, nunca sobrescrito. Permite
   perguntar "quando essa regra falhou pela primeira vez?".
+
+### Licao: ler a metodologia da fonte antes de publicar um numero
+
+Antes de divulgar o projeto, conferi os totais com o que o Banco Central e a imprensa publicaram.
+A pipeline bate centavo por centavo com a API, mas o total anual do Pix ficava ~11% abaixo do
+oficial (2024: 56,3 contra 63,5 bilhoes de transacoes). A causa estava na descricao do recurso
+no portal de dados abertos: a serie "nao inclui Pix liquidados nos livros do participante",
+ou seja, so conta o que passa pelo SPI. Nada estava errado no codigo; o erro seria chamar essa
+serie de "total do Pix". Correcao: README, dashboard e comentarios do catalogo passaram a dizer
+"Pix liquidado no SPI" e a citar a cobertura (~89% das transacoes, ~84% do valor).
+
+Tres niveis de conferencia, do mais facil ao mais esquecido:
+1. **Fidelidade:** o que esta na tabela e igual ao que a fonte entregou? (reconciliacao, contagens)
+2. **Consistencia:** as partes somam o todo? (municipios contra nacional)
+3. **Cobertura:** o que a fonte mede, de fato? (metodologia, notas tecnicas, comparacao com
+   numeros oficiais publicados por outro canal)
+
+**Pergunta de entrevista: "Como voce sabe que seu numero esta certo?"**
+Como eu responderia: confiro em tres niveis. Primeiro, se a tabela reproduz a fonte. Depois, se
+as partes fecham com o total. Por ultimo, e o que mais pega, se a fonte mede o que eu acho que
+mede: no Pix, descobri comparando com o total oficial que a serie aberta so cobre o liquidado
+no SPI, e passei a rotular assim.
 
 ### Perguntas de entrevista
 

@@ -18,15 +18,26 @@ O Pix foi aberto ao publico em 16/11/2020, entao novembro de 2020 e um mes parci
 comparacao parte de dezembro de 2020, o primeiro mes completo. Valores em reais correntes,
 sem correcao pela inflacao.
 
-| Indicador | Dez/2020 | Out/2026 |
+> **Cobertura do dado do Pix: o que esta serie mede.** As series abertas usadas aqui contam o
+> Pix **liquidado no SPI**, o sistema de liquidacao do BCB. A documentacao do
+> [conjunto de dados](https://dadosabertos.bcb.gov.br/dataset/pix/resource/d5430811-0ef7-4404-bc87-d76aa5cfebcd)
+> avisa que ele "nao inclui Pix liquidados nos livros do participante, isto e, transacoes nao
+> enviadas para liquidacao no SPI". Comparando com os totais anuais divulgados pelo BC (2024:
+> 63,5 bilhoes de transacoes e R$ 26,5 trilhoes; 2025: 79,8 bilhoes e R$ 35,4 trilhoes), a
+> serie cobre cerca de 89% das transacoes e 84% do valor. Ela serve para tendencia e recorte
+> regional; nao e o total do Pix. A serie por municipio soma o mesmo que a nacional (regra de
+> reconciliacao), entao tem a mesma cobertura.
+
+| Indicador (Pix liquidado no SPI) | Dez/2020 | Out/2026 |
 |---|---|---|
-| Transacoes Pix no mes | 124,9 milhoes | 7,37 bilhoes |
-| Valor liquidado no mes | R$ 107,2 bilhoes | R$ 3,28 trilhoes |
+| Transacoes no mes | 124,9 milhoes | 7,37 bilhoes |
+| Valor no mes | R$ 107,2 bilhoes | R$ 3,28 trilhoes |
 | Ticket medio | R$ 858 | R$ 445 |
 | Meta Selic (media do mes) | 2,00% a.a. | 13,75% a.a. |
 | IPCA acumulado 12 meses | 4,52% | 4,63% |
 
-- **Crescimento.** A quantidade mensal de transacoes multiplicou por 59 e o valor por 31.
+- **Crescimento.** No Pix liquidado no SPI, a quantidade mensal de transacoes multiplicou por
+  59 e o valor por 31.
   A quantidade caiu em relacao ao mes anterior em 16 dos 71 meses, 9 deles em janeiro ou
   fevereiro, mas ficou acima do mesmo mes do ano anterior em todos. Em out/2026 a alta em 12
   meses foi de 14,2%, a menor da serie.
@@ -43,10 +54,13 @@ sem correcao pela inflacao.
   Pix por residentes do estado e reunia 85,3% das pessoas fisicas pagadoras. Desde dez/2020
   a participacao do interior no valor variou entre 72,8% e 79,2%.
 - **Concentracao.** Sao Paulo respondeu por 37,8% do valor pago no pais em out/2026.
-- **Cooperativas de credito (fase 1.5).** 736 cooperativas em funcionamento em nov/2026, 702
-  delas singulares. Minas Gerais (156) e Sao Paulo (150) tem mais sedes; o Rio Grande do Sul
-  tem 81 (11% do pais), 44 de livre admissao. Os tres estados do Sul somam 238 sedes, 32% do
-  total.
+- **Cooperativas de credito (fase 1.5).** O cadastro do BCB consultado em nov/2026 lista 736
+  cooperativas em funcionamento, 702 delas singulares. Minas Gerais (156) e Sao Paulo (150) tem
+  mais sedes; o Rio Grande do Sul tem 81 (11% do pais), 44 de livre admissao. Os tres estados
+  do Sul somam 238 sedes, 32% do total. A contagem absoluta muda conforme a publicacao: o
+  [Panorama do SNCC](https://www.bcb.gov.br/content/estabilidadefinanceira/coopcredpanorama/panorama_cooperativas_sncc_anobase_dez_2025_FINAL_comnota.pdf)
+  do BCB registra 742 singulares em dez/2025. A diferenca ainda nao foi conciliada (backlog);
+  por isso o projeto destaca a distribuicao por UF, nao o total.
 - **Qualidade verificada entre fontes.** As duas fontes do Pix do BCB (nacional e por municipio)
   batem dentro de 0,1% em 68 dos 72 meses. Em 4 meses (nov/2020, set/2023, out/2025 e
   fev/2026) a soma por municipio fica 3% a 6,5% abaixo da nacional. Os arquivos desses meses
@@ -161,7 +175,9 @@ docs/                        aprendizado.md (conceitos, perguntas de entrevista,
 
 ## Fontes
 
-- [Estatisticas do Pix (API Olinda)](https://dadosabertos.bcb.gov.br/dataset/pix)
+- [Estatisticas do Pix (API Olinda)](https://dadosabertos.bcb.gov.br/dataset/pix) e a
+  [descricao do recurso](https://dadosabertos.bcb.gov.br/dataset/pix/resource/d5430811-0ef7-4404-bc87-d76aa5cfebcd)
+  (cobertura: Pix liquidado no SPI)
 - [SGS, serie 432 (meta Selic) e serie 433 (IPCA)](https://dadosabertos.bcb.gov.br/dataset/432-taxa-de-juros---selic)
 - [Relacao de instituicoes em funcionamento (cooperativas)](https://dadosabertos.bcb.gov.br/dataset/relacao-de-instituicoes-em-funcionamento-no-pais)
 
